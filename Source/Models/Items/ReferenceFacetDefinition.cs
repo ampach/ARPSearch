@@ -1,4 +1,5 @@
-﻿using Sitecore.Data;
+﻿using ARPSearch.Extensions;
+using Sitecore.Data;
 using Sitecore.Data.Items;
 
 namespace ARPSearch.Models.Items
@@ -6,6 +7,7 @@ namespace ARPSearch.Models.Items
     public class ReferenceFacetDefinition : FacetDefinition
     {
         public const string TemplateName = "Reference Facet Definition";
+        public const string FacetTitleFieldFieldName = "Value Title Accessor";
 
         public ReferenceFacetDefinition(Item sourceItem) : base(sourceItem)
         {
@@ -16,7 +18,9 @@ namespace ARPSearch.Models.Items
 
         private void Init(Item sourceItem)
         {
-            ValueTitleAccessor = new FacetValueTitleAccessor(sourceItem);
+            var valueTitleAccessorItem = sourceItem.GetItemValue(FacetTitleFieldFieldName);
+
+            ValueTitleAccessor = valueTitleAccessorItem != null ? new FacetValueTitleAccessor(valueTitleAccessorItem) : null;
         }
     }
 }

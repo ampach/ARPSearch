@@ -23,7 +23,9 @@ namespace ARPSearch.Service.Base
         where TIndexModel : BaseIndexModel, new()
     {
 
-        protected virtual string SearchIndexName
+        #region Properties
+
+        protected string SearchIndexName
         {
             get
             {
@@ -39,32 +41,60 @@ namespace ARPSearch.Service.Base
 
         protected ISearchConfiguration SearchConfiguration;
 
-        protected SearchAbstractService()
-        {
-        }
+        #endregion
+
+        #region Constructors
+
+        protected SearchAbstractService() { }
 
         protected SearchAbstractService(ISearchConfiguration searchConfiguration)
         {
-            //TODO: Handle 
-            SearchConfiguration = searchConfiguration;
+            SetIndexConfiguration(searchConfiguration);
         }
 
-        public void SetIndexConfiguration(ISearchConfiguration searchConfiguration)
-        {
-            Assert.IsNotNull(searchConfiguration, "Search configuration is null");
-
-            SearchConfiguration = searchConfiguration;
-        }
-        protected virtual Expression<Func<TIndexModel, bool>> ApplySpecificFilters(TRequest model)
-        {
-            return q => true;
-        }
+        #endregion
 
         public TResult Search(TRequest model, ISearchConfiguration searchConfiguration)
         {
             SetIndexConfiguration(searchConfiguration);
             return Search(model);
         }
+
+        public TResult Search()
+        {
+            return Search(new TRequest());
+        }
+
+        public IEnumerable<FacetModel> GetFacets(TRequest model, ISearchConfiguration configuration)
+        {
+            try
+            {
+                Assert.IsNotNull(Index, "Index");
+                Assert.IsNotNull(configuration, "configuration != null");
+                SearchConfiguration = configuration;
+
+                if (!EnsureIndexExistence(Index))
+                {
+                    return new List<FacetModel>();
+                }
+
+                using (IProviderSearchContext searchContext = Index.CreateSearchContext())
+                {
+                    var items = searchContext.GetQueryable<TIndexModel>(
+                        new CultureExecutionContext(Context.Language.CultureInfo));
+
+                    return GetFacets(items, model);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.ToString(), ex);
+            }
+            return new List<FacetModel>();
+        }
+
+
+        #region Virual and abstract methods
 
         public virtual TResult Search(TRequest model)
         {
@@ -75,18 +105,23 @@ namespace ARPSearch.Service.Base
                 Assert.IsNotNull(Index, "Index");
                 Assert.IsNotNull(SearchConfiguration, "Search configuration is null");
 
+                if (!EnsureIndexExistence(Index))
+                {
+                    return result;
+                }
+
                 using (IProviderSearchContext searchContext = Index.CreateSearchContext())
                 {
                     try
                     {
-                        EnsureIndexExistence(searchContext.Index);
-
                         var items = searchContext.GetQueryable<TIndexModel>(new CultureExecutionContext(Context.Language.CultureInfo));
 
                         result.Facets = GetFacets(items, model);
 
                         var globalPredicateBuilder = PredicateBuilder.True<TIndexModel>();
-                        var predicate = globalPredicateBuilder.And(ApplyCommonFilters(model));
+
+                        var predicate = globalPredicateBuilder.And(ApplyPredefinedFilters(model));
+
                         predicate = predicate.And(Filter(model));
 
                         items = items.Where(predicate);
@@ -109,58 +144,54 @@ namespace ARPSearch.Service.Base
                     catch (Exception ex)
                     {
                         result.SearchResultType = ResultTypes.Faild;
-
-                        //_logService.Error(ex.ToString(), ex);
+                        Logging.Log.Error(ex.ToString(), ex);
                     }
                 }
             }
             catch (Exception ex)
             {
                 result.SearchResultType = ResultTypes.Faild;
-
-                //_logService.Error(ex.ToString(), ex);
+                Logging.Log.Error(ex.ToString(), ex);
             }
             return result;
         }
 
-        public IEnumerable<FacetModel> GetFacets(TRequest model, ISearchConfiguration configuration)
+        protected virtual Expression<Func<TIndexModel, bool>> ApplySpecificFilters(TRequest model)
         {
-            try
-            {
-                Assert.IsNotNull(Index, "Index");
-                Assert.IsNotNull(configuration, "configuration != null");
-                SearchConfiguration = configuration;
+            return q => true;
+        }
+        protected abstract void MapSearchResults(TResult resultModel, SearchResults<TIndexModel> searchResultModel);
 
-                using (IProviderSearchContext searchContext = Index.CreateSearchContext())
-                {
-                    try
-                    {
-                        EnsureIndexExistence(searchContext.Index);
-
-                        var items = searchContext.GetQueryable<TIndexModel>(
-                            new CultureExecutionContext(Context.Language.CultureInfo));
-
-                        return GetFacets(items, model);
-                    }
-                    catch (Exception ex)
-                    {
-                        //_logService.Error(ex.ToString(), ex);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //_logService.Error(ex.ToString(), ex);
-            }
-            return new List<FacetModel>();
+        protected virtual IQueryable<TIndexModel> ApplyOrdering(IQueryable<TIndexModel> query)
+        {
+            return query;
         }
 
+        protected virtual IQueryable<TIndexModel> ApplyFacets(IQueryable<TIndexModel> query)
+        {
+            return query;
+        }
+
+        #endregion
+
+
+        #region Private methods
+
+        private IQueryable<TIndexModel> ApplyConfigurationFacets(IQueryable<TIndexModel> query)
+        {
+            if (SearchConfiguration.Facets != null && SearchConfiguration.Facets.Any())
+            {
+                query = SearchConfiguration.Facets.Aggregate(query, (current, facet) => current.FacetOn(w => w[facet.IndexFieldName]));
+            }
+            query = ApplyFacets(query);
+            return query;
+        }
 
         private IEnumerable<FacetModel> GetFacets(IQueryable<TIndexModel> query, TRequest model)
         {
             var result = new List<FacetModel>();
 
-            var predicateFilterGlobal = ApplyCommonFilters(model);
+            var predicateFilterGlobal = ApplyPredefinedFilters(model);
             var allFacetBuilder = query.Where(predicateFilterGlobal);
 
             allFacetBuilder = ApplyConfigurationFacets(allFacetBuilder);
@@ -281,37 +312,12 @@ namespace ARPSearch.Service.Base
 
             return result.OrderBy(q => q.SortOrder);
         }
-        protected virtual IQueryable<TIndexModel> ApplyOrdering(IQueryable<TIndexModel> query)
-        {
-            return query;
-        }
 
-        private IQueryable<TIndexModel> ApplyConfigurationFacets(IQueryable<TIndexModel> query)
-        {
-            if (SearchConfiguration.Facets != null && SearchConfiguration.Facets.Any())
-            {
-                query = SearchConfiguration.Facets.Aggregate(query, (current, facet) => current.FacetOn(w => w[facet.IndexFieldName]));
-            }
-            query = ApplyFacets(query);
-            return query;
-        }
-
-        protected virtual IQueryable<TIndexModel> ApplyFacets(IQueryable<TIndexModel> query)
-        {
-            return query;
-        }
-
-        protected abstract void MapSearchResults(TResult resultModel, SearchResults<TIndexModel> searchResultModel);
-
-        protected IQueryable<TIndexModel> Filter(IQueryable<TIndexModel> source, Expression<Func<TIndexModel, bool>> predicat)
-        {
-            return source.Where(predicat);
-        }
-
-        protected Expression<Func<TIndexModel, bool>> ApplyCommonFilters(TRequest model)
+        private Expression<Func<TIndexModel, bool>> ApplyPredefinedFilters(TRequest model)
         {
             var predicateFilterMain = PredicateBuilder.True<TIndexModel>();
 
+            //Filtering by the root items.
             if (SearchConfiguration.SearchRoots != null && SearchConfiguration.SearchRoots.Any())
             {
                 var includedTemplatesPredicate = PredicateBuilder.False<TIndexModel>();
@@ -326,6 +332,7 @@ namespace ARPSearch.Service.Base
                 predicateFilterMain = predicateFilterMain.And(includedTemplatesPredicate);
             }
 
+            //Defining templates which would be included in the search result
             if (SearchConfiguration.IncludedTemplates != null && SearchConfiguration.IncludedTemplates.Any())
             {
                 var includedTemplatesPredicate = PredicateBuilder.False<TIndexModel>();
@@ -340,9 +347,8 @@ namespace ARPSearch.Service.Base
                 predicateFilterMain = predicateFilterMain.And(includedTemplatesPredicate);
             }
 
+            //Applying further specific filters that can be added in an inheriting class
             predicateFilterMain = predicateFilterMain.And(ApplySpecificFilters(model));
-
-            //futher filtering will be applied there
 
             return predicateFilterMain;
         }
@@ -376,21 +382,22 @@ namespace ARPSearch.Service.Base
             return predicateMain;
         }
 
-        private void EnsureIndexExistence(ISearchIndex index, Exception ex = null)
+        private bool EnsureIndexExistence(ISearchIndex index)
         {
+            if(index == null)
+            {
+                Logging.Log.Error("Index is null. Check the name of index.");
+                return false;
+            }
+
             if (index.Summary.NumberOfDocuments == 0)
             {
                 var message = string.Format("Index is empty: {0}. You should rebuild index.", index.Name);
-
-                if (ex != null)
-                {
-                    //_logService.Error(message, ex);
-                }
-                else
-                {
-                    //_logService.Error(message);
-                }
+                Logging.Log.Error(message);
+                return true;
             }
+
+            return true;
         }
 
         private FacetModel ToCustomModel(FacetCategory category)
@@ -438,7 +445,7 @@ namespace ARPSearch.Service.Base
                     {
                         var field = item.Fields[referenceFacetDefinition.ValueTitleAccessor.FacetTitleField.Name];
 
-                        if (field != null) return field.Value;
+                        if (field != null) return !String.IsNullOrWhiteSpace(field.Value) ? field.Value : item.Name; 
                     }
                 }
             }
@@ -451,7 +458,7 @@ namespace ARPSearch.Service.Base
             return value;
         }
 
-        protected FacetDefinition GetFacetDefinition(FacetCategory category)
+        private FacetDefinition GetFacetDefinition(FacetCategory category)
         {
             if (category == null || SearchConfiguration.Facets == null)
             {
@@ -461,5 +468,13 @@ namespace ARPSearch.Service.Base
             return SearchConfiguration.Facets.FirstOrDefault(q => q.IndexFieldName.Equals(category.Name));
         }
 
+        private void SetIndexConfiguration(ISearchConfiguration searchConfiguration)
+        {
+            Assert.IsNotNull(searchConfiguration, "Search configuration is null");
+
+            SearchConfiguration = searchConfiguration;
+        }
+
+        #endregion
     }
 }
