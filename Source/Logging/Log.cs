@@ -1,6 +1,5 @@
 ﻿using System;
 using Sitecore.Abstractions;
-using Sitecore.DependencyInjection;
 
 namespace ARPSearch.Logging
 {

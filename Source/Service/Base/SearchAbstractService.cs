@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
 using ARPSearch.Enums;
+using ARPSearch.Helpers;
 using ARPSearch.Models;
 using ARPSearch.Models.Base;
 using ARPSearch.Models.Facets;
@@ -96,13 +98,13 @@ namespace ARPSearch.Service.Base
 
         #region Virual and abstract methods
 
-        public virtual TResult Search(TRequest model)
+        public TResult Search(TRequest model)
         {
             var result = new TResult();
 
             try
             {
-                Assert.IsNotNull(Index, "Index");
+                Assert.IsNotNull(Index, "Search Index is null");
                 Assert.IsNotNull(SearchConfiguration, "Search configuration is null");
 
                 if (!EnsureIndexExistence(Index))
@@ -115,6 +117,8 @@ namespace ARPSearch.Service.Base
                     try
                     {
                         var items = searchContext.GetQueryable<TIndexModel>(new CultureExecutionContext(Context.Language.CultureInfo));
+
+                        PopulateFromQueryString(model);
 
                         result.Facets = GetFacets(items, model);
 
@@ -172,6 +176,48 @@ namespace ARPSearch.Service.Base
             return query;
         }
 
+        public virtual void PopulateFromQueryString(ISearchRequestModel model)
+        {
+            if (!SearchConfiguration.LoadQueryString)
+            {
+                Logging.Log.Debug("Loading search parameters from query string is disabled");
+                return;
+            }
+
+            if (HttpContext.Current == null)
+            {
+                Logging.Log.Debug("Loading search parameters from query string is impossible due the HttpContext is null.");
+                return;
+            }
+
+            if (HttpContext.Current.Request.QueryString.Count < 1)
+            {
+                Logging.Log.Debug("There is no any query string parameters in the current request.");
+                return;
+            }
+
+            var query = HttpContext.Current.Request.QueryString["q"];
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                model.SearchBoxQuery = query;
+            }
+
+            var querystrings = HttpContext.Current.Request.QueryString.ToKeyValues().Where(q => q.Key != "q").ToList();
+            if (!querystrings.Any())
+                return;
+
+            model.Filters = querystrings.Select(q => new FilterModel
+            {
+                FieldName = q.Key,
+                FieldValue = q.Value
+            }).ToList();
+
+            var filter = model.Filters.LastOrDefault();
+            if (filter != null)
+            {
+                model.LastChangedFilterName = filter.FieldName;
+            }
+        }
         #endregion
 
 
