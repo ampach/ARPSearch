@@ -102,7 +102,7 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="App_Config\Include\ARPSearch\ARPSearch.Logging.config" />
+    <Content Include="App_Config\Include\ARPSearch\ARPSearch.Logging.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

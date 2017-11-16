@@ -11,7 +11,6 @@ namespace ARPSearch.Models.Items.Interfaces
         List<FacetDefinition> Facets { get; set; }
         bool IsPaginated { get; set; }
         int ResultsPerPage { get; set; }
-        bool IsSiteSpecific { get; set; }
         bool LoadQueryString { get; set; }
     }
 }

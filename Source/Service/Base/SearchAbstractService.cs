@@ -19,6 +19,12 @@ using Sitecore.Diagnostics;
 
 namespace ARPSearch.Service.Base
 {
+    /// <summary>
+    /// Abstract class with base implementation of search.
+    /// </summary>
+    /// <typeparam name="TRequest">Search Request Model. It has to implement ISearchRequestModel interface.</typeparam>
+    /// <typeparam name="TIndexModel">Model which will be returned from index.</typeparam>
+    /// <typeparam name="TResult">Model that includes the search result with additional data like facets, count of results.</typeparam>
     public abstract class SearchAbstractService<TRequest, TIndexModel, TResult>
         where TRequest : ISearchRequestModel, new()
         where TResult : BaseSearchResultModel, new()
@@ -27,6 +33,9 @@ namespace ARPSearch.Service.Base
 
         #region Properties
 
+        /// <summary>
+        /// Index Name. Value is coming from Sitecore. 
+        /// </summary>
         protected string SearchIndexName
         {
             get
@@ -38,8 +47,17 @@ namespace ARPSearch.Service.Base
         private ISearchIndex _index;
         private ISearchIndex Index
         {
-            get { return _index ?? (_index = ContentSearchManager.GetIndex(SearchIndexName)); }
+            get
+            {
+                if (_index == null || _index.Name != SearchIndexName)
+                {
+                    _index = ContentSearchManager.GetIndex(SearchIndexName);
+                }
+
+                return _index;
+            }
         }
+
 
         protected ISearchConfiguration SearchConfiguration;
 
@@ -47,8 +65,15 @@ namespace ARPSearch.Service.Base
 
         #region Constructors
 
+        /// <summary>
+        /// Default Constructor.
+        /// </summary>
         protected SearchAbstractService() { }
 
+        /// <summary>
+        /// The constructor can be used if we want to set a Search Configuration during creating instance of  search service
+        /// </summary>
+        /// <param name="searchConfiguration">Instance of Search Configuration class</param>
         protected SearchAbstractService(ISearchConfiguration searchConfiguration)
         {
             SetIndexConfiguration(searchConfiguration);
@@ -56,54 +81,54 @@ namespace ARPSearch.Service.Base
 
         #endregion
 
-        public TResult Search(TRequest model, ISearchConfiguration searchConfiguration)
-        {
-            SetIndexConfiguration(searchConfiguration);
-            return Search(model);
-        }
-
+        /// <summary>
+        /// Search without a request model. May be used when you don't have any filtering parameters for search.
+        /// </summary>
+        /// <returns>Result of search</returns>
         public TResult Search()
         {
             return Search(new TRequest());
         }
 
-        public IEnumerable<FacetModel> GetFacets(TRequest model, ISearchConfiguration configuration)
+        /// <summary>
+        /// Search with passing a Search configuration but without a request model. May be used when you want to use different Search Configuration with 
+        /// the same instance of search service and you don't have any filtering parameters for search. Search Configuration is required.
+        /// </summary>
+        /// <param name="searchConfiguration">Instance of Search Configuration class</param>
+        /// <returns>Result of search</returns>
+        public TResult Search(ISearchConfiguration searchConfiguration)
         {
-            try
-            {
-                Assert.IsNotNull(Index, "Index");
-                Assert.IsNotNull(configuration, "configuration != null");
-                SearchConfiguration = configuration;
-
-                if (!EnsureIndexExistence(Index))
-                {
-                    return new List<FacetModel>();
-                }
-
-                using (IProviderSearchContext searchContext = Index.CreateSearchContext())
-                {
-                    var items = searchContext.GetQueryable<TIndexModel>(
-                        new CultureExecutionContext(Context.Language.CultureInfo));
-
-                    return GetFacets(items, model);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.ToString(), ex);
-            }
-            return new List<FacetModel>();
+            return Search(new TRequest(), searchConfiguration);
         }
 
-
-        #region Virual and abstract methods
-
-        public TResult Search(TRequest model)
+        /// <summary>
+        /// Search with passing a Request Model. A search configuration which has defined by constructor or during previous search request will be used. 
+        /// </summary>
+        /// <param name="requestModel">Request Model</param>
+        /// <returns>Result of search</returns>
+        public TResult Search(TRequest requestModel)
+        {
+            return Search(requestModel, null);
+        }
+        
+        /// <summary>
+        /// Search with passing a Search configuration and a request model. May be used when you want to use different Search Configuration with 
+        /// the same instance of search service and you have filtering parameters for search. Search Configuration is required.
+        /// </summary>
+        /// <param name="requestModel">Request Model</param>
+        /// <param name="searchConfiguration">Instance of Search Configuration class</param>
+        /// <returns>Result of search</returns>
+        public TResult Search(TRequest requestModel, ISearchConfiguration searchConfiguration)
         {
             var result = new TResult();
 
             try
             {
+                if (searchConfiguration != null)
+                {
+                    SetIndexConfiguration(searchConfiguration);
+                }
+
                 Assert.IsNotNull(Index, "Search Index is null");
                 Assert.IsNotNull(SearchConfiguration, "Search configuration is null");
 
@@ -118,15 +143,15 @@ namespace ARPSearch.Service.Base
                     {
                         var items = searchContext.GetQueryable<TIndexModel>(new CultureExecutionContext(Context.Language.CultureInfo));
 
-                        PopulateFromQueryString(model);
+                        PopulateFromQueryString(requestModel);
 
-                        result.Facets = GetFacets(items, model);
+                        result.Facets = GetFacets(items, requestModel);
 
                         var globalPredicateBuilder = PredicateBuilder.True<TIndexModel>();
 
-                        var predicate = globalPredicateBuilder.And(ApplyPredefinedFilters(model));
+                        var predicate = globalPredicateBuilder.And(ApplyPredefinedFilters(requestModel));
 
-                        predicate = predicate.And(Filter(model));
+                        predicate = predicate.And(Filter(requestModel));
 
                         items = items.Where(predicate);
 
@@ -134,7 +159,7 @@ namespace ARPSearch.Service.Base
 
                         if (SearchConfiguration.IsPaginated)
                         {
-                            items = items.Page(model.Page < 1 ? 0 : model.Page - 1, SearchConfiguration.ResultsPerPage);
+                            items = items.Page(requestModel.Page < 1 ? 0 : requestModel.Page - 1, SearchConfiguration.ResultsPerPage);
                         }
 
                         var searchResults = items.GetResults();
@@ -160,17 +185,99 @@ namespace ARPSearch.Service.Base
             return result;
         }
 
-        protected virtual Expression<Func<TIndexModel, bool>> ApplySpecificFilters(TRequest model)
+        
+        /// <summary>
+        /// Method is used for getting direct facets without getting search results
+        /// A search configuration which has defined by constructor or during previous search request will be used.
+        /// </summary>
+        /// <param name="requestModel">Request Models</param>
+        /// <returns>List of facets</returns>
+        public IEnumerable<FacetModel> GetFacets(TRequest requestModel)
         {
+            return GetFacets(requestModel, null);
+        }
+
+        /// <summary>
+        /// Method is used for getting direct facets without getting search results
+        /// </summary>
+        /// <param name="requestModel">Request Models</param>
+        /// <param name="searchConfiguration">Search Configuration (Required)</param>
+        /// <returns>List of facets</returns>
+        public IEnumerable<FacetModel> GetFacets(TRequest requestModel, ISearchConfiguration searchConfiguration)
+        {
+            try
+            {
+                if (searchConfiguration != null)
+                {
+                    SetIndexConfiguration(searchConfiguration);
+                }
+
+                Assert.IsNotNull(Index, "Index");
+                Assert.IsNotNull(SearchConfiguration, "SearchConfiguration is null");
+
+                if (!EnsureIndexExistence(Index))
+                {
+                    return new List<FacetModel>();
+                }
+
+                using (IProviderSearchContext searchContext = Index.CreateSearchContext())
+                {
+                    var items = searchContext.GetQueryable<TIndexModel>(
+                        new CultureExecutionContext(Context.Language.CultureInfo));
+
+                    return GetFacets(items, requestModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.ToString(), ex);
+            }
+            return new List<FacetModel>();
+        }
+
+
+        #region Virual and abstract methods
+
+        /// <summary>
+        /// Used for applying additional conditions to query. IMPORTANT! This method is executed during building a query for search and shouldn't be called in another places.
+        /// Currently there is defined a filtering by a search query. It can be overridden in a class which will inherit current class.
+        /// </summary>
+        protected virtual Expression<Func<TIndexModel, bool>> ApplySpecificFilters(TRequest requestModel)
+        {
+            if (!String.IsNullOrWhiteSpace(requestModel.SearchBoxQuery))
+            {
+                var query = requestModel.SearchBoxQuery;
+
+                var predicate = PredicateBuilder.False<TIndexModel>();
+
+                predicate = predicate.Or(item => item.Name.Contains(query).Boost(1.5f));
+                predicate = predicate.Or(item => item.Content.Contains(query));
+
+                return predicate;
+            }
+
             return q => true;
         }
+
+        /// <summary>
+        /// Used for mapping an Index model to a Search Result Model. IMPORTANT! This method is executed during building a query for search and shouldn't be called in another places.
+        /// It have to be implemented in a class which will inherit current class.
+        /// </summary>
         protected abstract void MapSearchResults(TResult resultModel, SearchResults<TIndexModel> searchResultModel);
 
+        /// <summary>
+        /// Used for applying extra ordering to a search results. IMPORTANT! This method is executed during building a query for search and shouldn't be called in another places.
+        /// By default, a search results are ordrered by rank but It can be overridden in a class which will inherit current class.
+        /// </summary>
         protected virtual IQueryable<TIndexModel> ApplyOrdering(IQueryable<TIndexModel> query)
         {
             return query;
         }
 
+        /// <summary>
+        /// Currently, the facets are defined in the Sitecore. If you need to add any extra facets from code - just override this method.
+        /// IMPORTANT! This method is executed during building a query for search and shouldn't be called in another places.
+        /// </summary>
         protected virtual IQueryable<TIndexModel> ApplyFacets(IQueryable<TIndexModel> query)
         {
             return query;
@@ -402,29 +509,24 @@ namespace ARPSearch.Service.Base
         private Expression<Func<TIndexModel, bool>> Filter(TRequest model)
         {
             var predicateMain = PredicateBuilder.True<TIndexModel>();
-
-            if (SearchConfiguration.Facets != null && SearchConfiguration.Facets.Any())
+            
+            if (model.Filters != null && model.Filters.Any())
             {
-                if (model.Filters != null && model.Filters.Any())
+                var groupedFilters = model.Filters.GroupBy(q => q.FieldName);
+
+                foreach (var filterGroup in groupedFilters)
                 {
-                    var groupedFilters = model.Filters.GroupBy(q => q.FieldName);
-
-                    foreach (var filterGroup in groupedFilters)
+                    var filterPredicateBuilder = PredicateBuilder.False<TIndexModel>();
+                    foreach (var filter in filterGroup)
                     {
-                        if (SearchConfiguration.Facets.Any(w => w.IndexFieldName == filterGroup.Key))
-                        {
-                            var filterPredicateBuilder = PredicateBuilder.False<TIndexModel>();
-                            foreach (var filter in filterGroup)
-                            {
-                                filterPredicateBuilder = filterPredicateBuilder.Or(itm => itm[filterGroup.Key].Contains(filter.FieldValue) || itm[filterGroup.Key].Equals(filter.FieldValue));
-                            }
-
-                            predicateMain = predicateMain.And(filterPredicateBuilder);
-                        }
+                        filterPredicateBuilder = filterPredicateBuilder.Or(itm => itm[filterGroup.Key].Contains(filter.FieldValue) || itm[filterGroup.Key].Equals(filter.FieldValue));
                     }
+
+                    predicateMain = predicateMain.And(filterPredicateBuilder);
+                    
                 }
             }
-
+            
             return predicateMain;
         }
 

@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using ARPSearch.Models;
 using ARPSearch.Models.Base;
 using ARPSearch.Models.Items.Interfaces;
 using ARPSearch.Service.Base;
 using Sitecore.ContentSearch.Linq;
+using Sitecore.ContentSearch.Linq.Utilities;
 
 namespace ARPSearch.Service
 {
