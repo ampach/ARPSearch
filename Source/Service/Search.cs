@@ -10,7 +10,7 @@ using Sitecore.ContentSearch.Linq.Utilities;
 
 namespace ARPSearch.Service
 {
-    public class Search : SearchAbstractService<SearchRequestModel, BaseIndexModel, ARPSearchSeachResultModel>
+    public sealed class Search : SearchAbstractService<SearchRequestModel, BaseIndexModel, ARPSearchSeachResultModel>
     {
         public Search()
         {

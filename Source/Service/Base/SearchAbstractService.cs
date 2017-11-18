@@ -283,7 +283,12 @@ namespace ARPSearch.Service.Base
             return query;
         }
 
-        public virtual void PopulateFromQueryString(ISearchRequestModel model)
+
+        /// <summary>
+        /// Method is used for populating a request model from Query String parameters. If you need to add populating any extra parameters - just override this method.
+        /// IMPORTANT! This method is executed during building a query for search and shouldn't be called in another places.
+        /// </summary>
+        protected virtual void PopulateFromQueryString(ISearchRequestModel model)
         {
             if (!SearchConfiguration.LoadQueryString)
             {

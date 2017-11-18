@@ -48,10 +48,27 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Sitecore.Kernel, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sitecore.Kernel.NoReferences.7.2.160123\lib\NET45\Sitecore.Kernel.dll</HintPath>
+    <Reference Include="Sitecore.ContentSearch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.ContentSearch.NoReferences.7.2.160123\lib\NET45\Sitecore.ContentSearch.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Sitecore.ContentSearch.Linq, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.ContentSearch.Linq.NoReferences.7.2.160123\lib\NET45\Sitecore.ContentSearch.Linq.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Sitecore.Kernel, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.Kernel.NoReferences.7.2.160123\lib\NET45\Sitecore.Kernel.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Sitecore.Logging, Version=1.2.0.30715, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.Logging.NoReferences.7.2.160123\lib\NET45\Sitecore.Logging.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -93,7 +110,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Examples.cs" />
+    <Compile Include="AdvancedUsages\Models\IndexModels\ProductIndexModel.cs" />
+    <Compile Include="AdvancedUsages\Models\SearchRequestModels\ProductSearchRequest.cs" />
+    <Compile Include="AdvancedUsages\Models\SearchResultModels\ProductSearchResultModel.cs" />
+    <Compile Include="AdvancedUsages\Models\ViewModels\ProductViewModel.cs" />
+    <Compile Include="AdvancedUsages\Services\ProductSearchService.cs" />
+    <Compile Include="BasicUsages\Examples.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

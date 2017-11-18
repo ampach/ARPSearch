@@ -1,4 +1,6 @@
-﻿namespace ARPSearch.Usages
+﻿using ARPSearch.Usages.AdvancedUsages.Services;
+
+namespace ARPSearch.Usages.BasicUsages
 {
     public class Examples
     {
@@ -13,6 +15,7 @@
 
             var requestModel = new ARPSearch.Models.SearchRequestModel();
             var searchResults2 = searchService.Search(requestModel);
+
 
         }
 
