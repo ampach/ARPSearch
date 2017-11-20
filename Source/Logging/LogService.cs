@@ -11,6 +11,7 @@ namespace ARPSearch.Logging
         public LogService()
         {
             _logger = LoggerFactory.GetLogger("Sitecore.Logging.ARPSearch");
+            _logger.Info("ARPSearch Logger is initialized: " + DateTime.Now.ToLongDateString());
         }
 
         public void Debug(string message)

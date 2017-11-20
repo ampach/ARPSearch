@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ARPSearch")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("ARPSearch is a wrapper for Sitecore Content Search")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Artsem Prashkovich")]
 [assembly: AssemblyProduct("ARPSearch")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © Artsem Prashkovich  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

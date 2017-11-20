@@ -30,7 +30,7 @@ namespace ARPSearch.Service.Base
         where TResult : BaseSearchResultModel, new()
         where TIndexModel : BaseIndexModel, new()
     {
-
+        
         #region Properties
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace ARPSearch.Service.Base
 
             allFacetBuilder = ApplyConfigurationFacets(allFacetBuilder);
 
-            var allFacets = allFacetBuilder.GetFacets().Categories.Select(ToCustomModel).ToList();
+            var allFacets = allFacetBuilder.GetFacets().Categories.Select(ToCustomModel).Where(f => f != null).ToList();
 
             if (model.Filters == null || !model.Filters.Any())
             {
@@ -393,7 +393,7 @@ namespace ARPSearch.Service.Base
                 var expression = predicateFilterGlobal.And(predicat);
                 var queryFacets = query.Where(expression);
                 queryFacets = ApplyConfigurationFacets(queryFacets);
-                var facets = queryFacets.GetFacets().Categories.Select(ToCustomModel).ToList();
+                var facets = queryFacets.GetFacets().Categories.Select(ToCustomModel).Where(f => f != null).ToList();
                 facets = facets.Where(f => f.FieldName != lastChangedFilterName).ToList();
                 result.AddRange(facets);
 
@@ -418,7 +418,7 @@ namespace ARPSearch.Service.Base
                     expression = predicateFilterGlobal.And(predicat);
                     queryFacets = query.Where(expression);
                     queryFacets = ApplyConfigurationFacets(queryFacets);
-                    facets = queryFacets.GetFacets().Categories.Select(ToCustomModel).ToList();
+                    facets = queryFacets.GetFacets().Categories.Select(ToCustomModel).Where(f => f != null).ToList();
                     facets = facets.Where(f => f.FieldName == lastChangedFilterName).ToList();
                     result.AddRange(facets);
                 }
@@ -559,7 +559,7 @@ namespace ARPSearch.Service.Base
 
             if (facetDefinition == null)
             {
-                return new FacetModel();
+                return null;
             }
 
             return new FacetModel
@@ -618,7 +618,12 @@ namespace ARPSearch.Service.Base
                 return null;
             }
 
-            return SearchConfiguration.Facets.FirstOrDefault(q => q.IndexFieldName.Equals(category.Name));
+            var facetDefinition = SearchConfiguration.Facets.FirstOrDefault(q => q.IndexFieldName.Equals(category.Name));
+
+            if(facetDefinition == null)
+                Logging.Log.Warn("Can't find facet definition with name: " + category.Name);
+
+            return facetDefinition;
         }
 
         private void SetIndexConfiguration(ISearchConfiguration searchConfiguration)

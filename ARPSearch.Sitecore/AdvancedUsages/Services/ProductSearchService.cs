@@ -50,8 +50,8 @@ namespace ARPSearch.Usages.AdvancedUsages.Services
                 result.Add(new ProductViewModel
                 {
                     Title = item.GetStringValue("Title"),
-                    Category = item.GetItemsListValue("Category").Select(q => q.Name).Aggregate((first, second) => first + ", " + second),
-                    Manufacturer = item.GetItemValue("Manufacturer").Name
+                    Category = item.GetItemsListValue("ProductCategory").Select(q => q.Name).Aggregate((first, second) => first + ", " + second),
+                    Manufacturer = item.GetItemValue("ProductModel").Name
                 });
             }
 
