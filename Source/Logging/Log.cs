@@ -1,5 +1,4 @@
 ﻿using System;
-using Sitecore.Abstractions;
 
 namespace ARPSearch.Logging
 {
@@ -16,6 +15,7 @@ namespace ARPSearch.Logging
                 {
                     lock (syncRoot)
                     {
+
                         if (_instance == null)
                             _instance = new LogService();
                     }

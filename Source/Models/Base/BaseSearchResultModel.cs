@@ -19,6 +19,7 @@ namespace ARPSearch.Models.Base
         [DataMember]
         public int TotalResult { get; set; }
 
+        [DataMember]
         public ResultTypes SearchResultType { get; set; }
 
         

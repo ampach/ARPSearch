@@ -41,23 +41,27 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Sitecore.ContentSearch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sitecore.ContentSearch.NoReferences.7.2.160123\lib\NET45\Sitecore.ContentSearch.dll</HintPath>
+      <HintPath>..\packages\Sitecore.ContentSearch.NoReferences.8.0.150427\lib\NET45\Sitecore.ContentSearch.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Sitecore.ContentSearch.Linq, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sitecore.ContentSearch.Linq.NoReferences.7.2.160123\lib\NET45\Sitecore.ContentSearch.Linq.dll</HintPath>
+      <HintPath>..\packages\Sitecore.ContentSearch.Linq.NoReferences.8.0.150427\lib\NET45\Sitecore.ContentSearch.Linq.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Sitecore.Kernel, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sitecore.Kernel.NoReferences.7.2.160123\lib\NET45\Sitecore.Kernel.dll</HintPath>
+    <Reference Include="Sitecore.Kernel, Version=8.0.5138.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.Kernel.NoReferences.8.0.150427\lib\NET45\Sitecore.Kernel.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="Sitecore.Logging, Version=1.2.0.30715, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sitecore.Logging.NoReferences.7.2.160123\lib\NET45\Sitecore.Logging.dll</HintPath>
+      <HintPath>..\packages\Sitecore.Logging.NoReferences.8.0.150427\lib\NET45\Sitecore.Logging.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Sitecore.Mvc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.Mvc.NoReferences.8.0.150427\lib\NET45\Sitecore.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -88,21 +92,28 @@
     <Compile Include="Models\ISearchRequestModel.cs" />
     <Compile Include="Models\Items\BaseItem.cs" />
     <Compile Include="Models\Items\FacetDefinition.cs" />
+    <Compile Include="Models\Items\SearchServiceDefinition.cs" />
     <Compile Include="Models\Items\FacetValueTitleAccessor.cs" />
     <Compile Include="Models\Items\Interfaces\ISearchConfiguration.cs" />
     <Compile Include="Models\Items\ReferenceFacetDefinition.cs" />
     <Compile Include="Models\Items\SearchConfiguration.cs" />
     <Compile Include="Models\Items\TextFacetDefenition.cs" />
     <Compile Include="Models\KeyValue.cs" />
+    <Compile Include="Models\RenderingModels\SearchResultRenderingModel.cs" />
+    <Compile Include="Models\SearchAjaxRequest.cs" />
     <Compile Include="Models\SearchRequestModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\Base\ISearchService.cs" />
     <Compile Include="Service\Base\SearchAbstractService.cs" />
     <Compile Include="Service\Search.cs" />
+    <Compile Include="Settings\IARPSearchSettings.cs" />
+    <Compile Include="Settings\ARPSearchSettings.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="App_Config\Include\ARPSearch\ARPSearch.Logging.config" />
+    <Content Include="App_Config\Include\ARPSearch\ARPSearch.Settings.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

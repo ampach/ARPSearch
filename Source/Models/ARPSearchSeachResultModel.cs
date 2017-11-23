@@ -4,6 +4,7 @@ using ARPSearch.Models.Base;
 
 namespace ARPSearch.Models
 {
+    [DataContract]
     public class ARPSearchSeachResultModel : BaseSearchResultModel
     {
         [DataMember]

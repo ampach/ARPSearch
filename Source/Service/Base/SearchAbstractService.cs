@@ -25,7 +25,7 @@ namespace ARPSearch.Service.Base
     /// <typeparam name="TRequest">Search Request Model. It has to implement ISearchRequestModel interface.</typeparam>
     /// <typeparam name="TIndexModel">Model which will be returned from index.</typeparam>
     /// <typeparam name="TResult">Model that includes the search result with additional data like facets, count of results.</typeparam>
-    public abstract class SearchAbstractService<TRequest, TIndexModel, TResult>
+    public abstract class SearchAbstractService<TRequest, TIndexModel, TResult> : ISearchService<TRequest, TResult>
         where TRequest : ISearchRequestModel, new()
         where TResult : BaseSearchResultModel, new()
         where TIndexModel : BaseIndexModel, new()
@@ -591,8 +591,8 @@ namespace ARPSearch.Service.Base
                     {
                         return String.Empty;
                     }
-
-                    var item = Context.Database.GetItem(id.ToID());
+                    
+                    var item = Context.Database.GetItem(Sitecore.Data.ID.Parse(id));
 
                     if (item != null && referenceFacetDefinition.ValueTitleAccessor != null && referenceFacetDefinition.ValueTitleAccessor.FacetTitleField != null)
                     {

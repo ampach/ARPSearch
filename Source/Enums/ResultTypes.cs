@@ -1,5 +1,8 @@
-﻿namespace ARPSearch.Enums
+﻿using System.Runtime.Serialization;
+
+namespace ARPSearch.Enums
 {
+    [DataContract]
     public enum ResultTypes
     {
         Success,
