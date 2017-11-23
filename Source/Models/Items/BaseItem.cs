@@ -9,9 +9,11 @@ namespace ARPSearch.Models.Items
         {
             ItemId = sourceItem.ID;
             TemplateId = sourceItem.TemplateID;
+            InnerItem = sourceItem;
         }
 
         public ID ItemId { get; set; }
         public ID TemplateId { get; set; }
+        public Item InnerItem { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace ARPSearch.Usages.BasicUsages
         public void SetSearchConfigurationByConstructor()
         {
             var configurationItem = Sitecore.Context.Database.GetItem("{Search Configuration Item ID}");
-            var searchConfiguration = new ARPSearch.Models.Items.SearchConfiguration(configurationItem);
+            var searchConfiguration = ARPSearch.Models.Items.SearchConfiguration.Create(configurationItem);
 
             var searchService = new ARPSearch.Service.Search(searchConfiguration);
 
@@ -24,7 +24,7 @@ namespace ARPSearch.Usages.BasicUsages
             var searchService = new ARPSearch.Service.Search();
 
             var configurationItem = Sitecore.Context.Database.GetItem("{Search Configuration Item ID}");
-            var searchConfiguration = new ARPSearch.Models.Items.SearchConfiguration(configurationItem);
+            var searchConfiguration = ARPSearch.Models.Items.SearchConfiguration.Create(configurationItem);
 
             var searchResults1 = searchService.Search(searchConfiguration);
 

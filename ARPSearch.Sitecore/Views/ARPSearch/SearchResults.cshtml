@@ -1,0 +1,131 @@
+﻿@model ARPSearch.Models.RenderingModels.SearchResultRenderingModel
+
+<div class="arps-container">
+    <div class="arps-sidebar">
+        sidebar
+    </div>
+    <div class="arps-content">
+        content
+    </div>
+    <div class="arps-clear"></div>
+</div>
+
+@foreach (var f in Model.Facets)
+{
+    <input type="hidden" name="facetsDef" id="@f.Key" value="@f.Value"/>
+}
+
+<script type="text/javascript">
+    ;(function () {
+        function ARPsearch() { }
+
+        function test() {
+            var data = {
+                itemId: "21321321321321"
+            }
+            ajax("api/sitecore/ARPSearch/GetSearchResults", data).then(function (data) {
+                console.log(data);
+            }, function (error) {
+                console.log(error);
+            });
+        }
+
+        ARPsearch.test = test;
+       
+
+        function ajax(url, requestuestBody) {
+            return new Promise(function (succeed, fail) {
+
+                var request = new XMLHttpRequest();
+                request.open("POST", url, true);
+                request.setRequestHeader('Content-Type', 'application/json');
+
+                request.addEventListener("load", function () {
+                    if (request.status < 400)
+                        succeed(request.responseText);
+                    else
+                        fail(new Error("Request failed: " + request.statusText));
+                });
+
+                request.addEventListener("error", function () {
+                    fail(new Error("Network error"));
+                });
+
+                request.send(JSON.stringify(requestuestBody));
+            });
+        }
+
+        window.arpsearch = ARPsearch; 
+
+    }());
+    
+</script>
+
+<style type="text/css">
+    body * {
+        box-sizing: border-box;
+    }
+
+     /*@@media (min-width: 1200px) {
+         .arps-container {
+             width: 1170px;
+         }
+     }
+    @@media (min-width: 993px) and (max-width: 1199px) {
+        .arps-container {
+            width: 970px;
+        }
+    }
+    @@media (min-width: 769px) and (max-width: 992px) {
+        .arps-container {
+            width: 750px;
+        }
+    }
+    @@media (max-width: 768px) {
+        .arps-container {
+            width: 100%;
+        }
+    }*/
+
+    .arps-clear {
+        clear: both;
+    }
+    .arps-container {
+        padding: 20px 0;
+    }
+
+    .arps-sidebar {
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+        background-color: aqua;
+    }
+    .arps-content {
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+        background-color: aquamarine;
+    }
+
+    @@media (min-width: 769px){
+        .arps-sidebar {
+            width: 25%;
+            float: left;
+        }
+        .arps-content {
+            width: 75%;
+            float: left;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .arps-sidebar {
+            width: 100%;
+        }
+        .arps-content {
+            width: 100%;
+        }
+    }
+</style>
