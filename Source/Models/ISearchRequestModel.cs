@@ -10,6 +10,7 @@ namespace ARPSearch.Models
 
         List<FilterModel> Filters { get; set; }
         string SearchBoxQuery { get; set; }
+        string CurrentUrl { get; set; }
         int Page { get; set; }
     }
 }

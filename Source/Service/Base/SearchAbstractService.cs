@@ -16,6 +16,7 @@ using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
 using Sitecore.Diagnostics;
+using Sitecore.Text;
 
 namespace ARPSearch.Service.Base
 {
@@ -296,25 +297,26 @@ namespace ARPSearch.Service.Base
                 return;
             }
 
-            if (HttpContext.Current == null)
+            if (String.IsNullOrWhiteSpace(model.CurrentUrl))
             {
                 Logging.Log.Debug("Loading search parameters from query string is impossible due the HttpContext is null.");
                 return;
             }
+            var url = new Sitecore.Text.UrlString(model.CurrentUrl);
 
-            if (HttpContext.Current.Request.QueryString.Count < 1)
+            if (url.Parameters.Count < 1)
             {
                 Logging.Log.Debug("There is no any query string parameters in the current request.");
                 return;
             }
 
-            var query = HttpContext.Current.Request.QueryString["q"];
+            var query = url.Parameters.Get("q");
             if (!string.IsNullOrWhiteSpace(query))
             {
                 model.SearchBoxQuery = query;
             }
 
-            var querystrings = HttpContext.Current.Request.QueryString.ToKeyValues().Where(q => q.Key != "q").ToList();
+            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && string.IsNullOrWhiteSpace(q.Value)).ToList();
             if (!querystrings.Any())
                 return;
 

@@ -16,10 +16,6 @@ namespace ARPSearch.Usages.Controllers
 
         public ActionResult SearchResults()
         {
-            var configuration =
-                ARPSearch.Models.Items.SearchConfiguration.Create(
-                    Sitecore.Context.Database.GetItem(new Sitecore.Data.ID("{614BF2AA-3632-4CB1-B0A1-7364FA537490}")));
-
             return base.View();
         }
 

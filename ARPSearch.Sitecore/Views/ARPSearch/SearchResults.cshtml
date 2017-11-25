@@ -29,20 +29,19 @@
         ; (function () {
             function ARPsearch() { }
 
-            function test() {
+            function search() {
                 var root = document.getElementById("arpsearch-results");
-
-
 
                 var data = {
                     confID: root.getAttribute("data-confid"),
                     searchService: root.getAttribute("data-searchservice"),
                     searchResult: root.getAttribute("data-searchresult"),
 
-                    LastChangedFilterName: "",
-                    Filters: [{ FieldName: "", FieldValue: ""}],
-                    SearchBoxQuery: "bmws",
-                    Page: ""
+                    //LastChangedFilterName: "",
+                    //Filters: [{ FieldName: "", FieldValue: ""}],
+                    //SearchBoxQuery: "",
+                    CurrentUrl: window.location.href,
+                    //Page: ""
                 }
                 ajax(root.getAttribute("data-requesturl"), data).then(function (data) {
                     console.log(data);
@@ -51,9 +50,28 @@
                 });
             }
 
-            ARPsearch.test = test;
+            ARPsearch.search = search;
 
+            var ready = function (fn) {
 
+                // Sanity check
+                if (typeof fn !== 'function') return;
+
+                // If document is already loaded, run method
+                if (document.readyState === 'complete') {
+                    return fn();
+                }
+
+                // Otherwise, wait until document is loaded
+                document.addEventListener('DOMContentLoaded', fn, false);
+
+            };
+
+            ready(function () {
+                search();
+            });
+
+            
             function ajax(url, requestuestBody) {
                 return new Promise(function (succeed, fail) {
 
