@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARPSearch", "Source\ARPSearch.csproj", "{A763DD5B-5071-4B40-8990-B7FB025EA020}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARPSearch.Usages", "ARPSearch.Sitecore\ARPSearch.Usages.csproj", "{85D63702-A3BB-41C9-88A4-CBD88CC2728F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARPSearch.UI", "ARPSearch.UI\ARPSearch.UI.csproj", "{85D63702-A3BB-41C9-88A4-CBD88CC2728F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

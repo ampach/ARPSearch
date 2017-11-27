@@ -3,12 +3,11 @@ using System.Reflection;
 using System.Web.Mvc;
 using ARPSearch.Models;
 using ARPSearch.Service;
-using ARPSearch.Service.Base;
 using Newtonsoft.Json;
 using Sitecore.Data;
 using Sitecore.Mvc.Controllers;
 
-namespace ARPSearch.Usages.Controllers
+namespace ARPSearch.UI.Controllers
 {
     public class ARPSearchController : SitecoreController
     {

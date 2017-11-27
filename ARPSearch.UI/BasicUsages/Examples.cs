@@ -1,6 +1,6 @@
 ﻿using ARPSearch.Usages.AdvancedUsages.Services;
 
-namespace ARPSearch.Usages.BasicUsages
+namespace ARPSearch.UI.BasicUsages
 {
     public class Examples
     {

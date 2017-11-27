@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
 using ARPSearch.Enums;
 using ARPSearch.Helpers;
 using ARPSearch.Models;
@@ -11,12 +10,10 @@ using ARPSearch.Models.Facets;
 using ARPSearch.Models.Items;
 using ARPSearch.Models.Items.Interfaces;
 using Sitecore;
-using Sitecore.Common;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
 using Sitecore.Diagnostics;
-using Sitecore.Text;
 
 namespace ARPSearch.Service.Base
 {
@@ -231,7 +228,7 @@ namespace ARPSearch.Service.Base
             }
             catch (Exception ex)
             {
-                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.ToString(), ex);
+                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.Message, ex);
             }
             return new List<FacetModel>();
         }

@@ -1,0 +1,43 @@
+﻿@model ARPSearch.Models.RenderingModels.SearchResultRenderingModel
+
+@if (Model.IsInitialized)
+{
+    <link href="~/ARPSearch/css/arpsearch.main.css" rel="stylesheet" />
+
+    <div id="arpsearch-results" class="arps-container"
+         data-confid="@Model.SearchConfigurationId" data-requesturl="@Model.SearchServiceAjaxRequestUrl"
+         data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel">
+        
+        <div class="arps-sidebar">
+            sidebar
+        </div>
+        <div class="arps-content">
+            content
+        </div>
+
+        <div class="arps-clear"></div>
+
+
+        @foreach (var f in Model.Facets)
+        {
+            <input type="hidden" name="facetsDef" id="@f.Key" value="@f.Value"/>
+        }
+    </div>
+
+    <!-- BEGIN: Underscore Template Definition. -->
+    <script id="dropdown-facet" type="text/underscore">
+        <div class="facets">
+            <%= rc.listTitle %>
+        </div>
+    </script>
+    <script id="checkbox-list-facet" type="text/underscore">
+        <div class="facets">
+            <%= rc.listTitle %>
+        </div>
+    </script>
+    <!-- END: Underscore Template Definition. -->
+
+    <script src="~/ARPSearch/js/underscore-min.js"></script>
+    <script src="~/ARPSearch/js/arpsearch.main.js" ></script>
+    
+}
