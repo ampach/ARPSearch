@@ -28,7 +28,7 @@ namespace ARPSearch.Models.Items
             IndexFieldName = sourceItem.GetStringValue(IndexFieldNameFieldName);
             SortOrder = sourceItem.GetIntegerValue(SortOrderFieldName);
 
-            FacetViewType = sourceItem.GetIDValue(FacetViewTypeFieldName).ToString();
+            FacetViewType = sourceItem.GetIDValue(FacetViewTypeFieldName).ToShortID().ToString();
         }
     }
 }

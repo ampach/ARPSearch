@@ -18,8 +18,9 @@
             //Page: ""
         }
         ajax(root.getAttribute("data-requesturl"), data).then(function (data) {
-            console.log(data);
-            renderSearchResults(data);
+            var obj = JSON.parse(data);
+            console.log(obj);
+            renderSearchResults(obj);
         }, function (error) {
             console.log(error);
         });
@@ -31,18 +32,24 @@
     }
 
     function renderFacets(facets) {
-        for (var i = 0; i < facets.length; i++) {
-            var facetDefEl = document.getElementById(facets[i].ViewType);
-            if (facetDefEl) {
-                var facettemplateId = facetDefEl.value;
-                var teplateHtml = document.getElementById(facettemplateId);
-                if (teplateHtml) {
-                    var template = uscore.template(teplateHtml.innerHTML);
+        var facetsContainer = document.querySelector(".arps-sidebar .facets-container");
+        if (facetsContainer) {
+            for (var i = 0; i < facets.length; i++) {
+                if (facets[i].Enabled && facets[i].Values.length > 0) {
+                    var facetDefEl = document.getElementById(facets[i].ViewType);
+                    if (facetDefEl) {
+                        var facettemplateId = facetDefEl.value;
+                        var teplateHtml = document.getElementById(facettemplateId);
+                        if (teplateHtml) {
+                            var template = uscore.template(teplateHtml.innerHTML);
+                            facetsContainer.innerHTML = facetsContainer.innerHTML + template(facets[i]);
+                        }
 
+                    }
                 }
-                
             }
         }
+        
     }
 
     function renderResultBody(results) {
@@ -70,35 +77,35 @@
         initUnderscore();
         search();
 
-        var template = uscore.template(
-            document.getElementById('result-template').innerHTML
-        );
+        //var template = uscore.template(
+        //    document.getElementById('result-template').innerHTML
+        //);
 
-        var templateData = {
-            listTitle: "Olympic Volleyball Players",
-            listItems: [
-                {
-                    name: "Misty May-Treanor",
-                    hasOlympicGold: true
-                },
-                {
-                    name: "Kerri Walsh Jennings",
-                    hasOlympicGold: true
-                },
-                {
-                    name: "Jennifer Kessy",
-                    hasOlympicGold: false
-                },
-                {
-                    name: "April Ross",
-                    hasOlympicGold: false
-                }
-            ]
-        };
+        //var templateData = {
+        //    listTitle: "Olympic Volleyball Players",
+        //    listItems: [
+        //        {
+        //            name: "Misty May-Treanor",
+        //            hasOlympicGold: true
+        //        },
+        //        {
+        //            name: "Kerri Walsh Jennings",
+        //            hasOlympicGold: true
+        //        },
+        //        {
+        //            name: "Jennifer Kessy",
+        //            hasOlympicGold: false
+        //        },
+        //        {
+        //            name: "April Ross",
+        //            hasOlympicGold: false
+        //        }
+        //    ]
+        //};
 
-        var r = template(templateData);
+        //var r = template(templateData);
 
-        document.getElementsByClassName("arps-content")[0].innerHTML = r;
+        //document.getElementsByClassName("arps-content")[0].innerHTML = r;
     });
 
     function initUnderscore() {

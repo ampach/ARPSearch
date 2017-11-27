@@ -313,7 +313,7 @@ namespace ARPSearch.Service.Base
                 model.SearchBoxQuery = query;
             }
 
-            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && string.IsNullOrWhiteSpace(q.Value)).ToList();
+            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && !string.IsNullOrWhiteSpace(q.Value)).ToList();
             if (!querystrings.Any())
                 return;
 

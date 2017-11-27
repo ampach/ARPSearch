@@ -1,4 +1,5 @@
-﻿@model ARPSearch.Models.RenderingModels.SearchResultRenderingModel
+﻿@using Sitecore.Common
+@model ARPSearch.Models.RenderingModels.SearchResultRenderingModel
 
 @if (Model.IsInitialized)
 {
@@ -9,10 +10,11 @@
          data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel">
         
         <div class="arps-sidebar">
-            sidebar
+            <div class="facets-container">
+                
+            </div>
         </div>
         <div class="arps-content">
-            content
         </div>
 
         <div class="arps-clear"></div>
@@ -20,19 +22,30 @@
 
         @foreach (var f in Model.Facets)
         {
-            <input type="hidden" name="facetsDef" id="@f.Key" value="@f.Value"/>
+            <input type="hidden" name="facetsDef" id="@f.Key.ToID().ToShortID()" value="@f.Value"/>
         }
     </div>
 
     <!-- BEGIN: Underscore Template Definition. -->
     <script id="dropdown-facet" type="text/underscore">
-        <div class="facets">
-            <%= rc.listTitle %>
+        <div class="facet dropdown-facet">
+            <label>
+                <%= rc.Title %>
+            </label> 
+            <div class="facet-body">
+                <select data-category="<%= rc.FieldName %>">
+                    <option value="-1">Select an option</option>
+                    <% uscore.map(rc.Values, function(n){ %>
+                    <option <% if(n.IsSelected) {%> selected="selected" <% } %> value="<%= n.Value %>"><%= n.Name %></option>
+                    <% })%>
+                </select>
+                <span></span>
+            </div>
         </div>
     </script>
     <script id="checkbox-list-facet" type="text/underscore">
         <div class="facets">
-            <%= rc.listTitle %>
+            <%= rc.Title %>
         </div>
     </script>
     <!-- END: Underscore Template Definition. -->

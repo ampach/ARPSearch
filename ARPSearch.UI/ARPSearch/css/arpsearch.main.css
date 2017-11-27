@@ -36,8 +36,71 @@
     min-height: 1px;
     padding-right: 15px;
     padding-left: 15px;
-    background-color: aqua;
 }
+
+.facets-container{
+    width: 100%;
+    padding: 5px;
+    padding-bottom: 20px;
+}
+.facets-container label{
+    display: block;
+    width: 100%;
+    padding: 5px;
+    font-weight: 600;
+}
+
+.facets-container .facet{
+   
+    padding-bottom: 20px;
+}
+
+
+.facets-container .dropdown-facet .facet-body
+{
+    background: #FFF;
+    overflow: hidden;
+    display: inline-block;
+    color: #525252;
+    font-weight: 300;
+    -webkit-border-radius: 5px 4px 4px 5px/5px 5px 4px 4px;
+    -moz-border-radius: 5px 4px 4px 5px/5px 5px 4px 4px;
+    border-radius: 5px 4px 4px 5px/5px 5px 4px 4px;
+    -webkit-box-shadow: 0 0 5px rgba(123, 123, 123, 0.2);
+    -moz-box-shadow: 0 0 5px rgba(123,123,123,.2);
+    box-shadow: 0 0 5px rgba(123, 123, 123, 0.2);
+    border: solid 1px #DADADA;
+    font-family: "helvetica neue",arial;
+    position: relative;
+    cursor: pointer;
+    padding-right:20px;
+    width:100%;
+
+}
+.facets-container .dropdown-facet .facet-body span
+{
+    position: absolute;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: url("/ARPSearch/img/arrow.png") no-repeat;
+    top: 50%;
+    margin-top: -4px;
+}
+.facets-container .dropdown-facet .facet-body select
+{
+    -webkit-appearance: none;
+    appearance:none;
+    width:100%;
+    background:none;
+    background:transparent;
+    border:none;
+    outline:none;
+    cursor:pointer;
+    padding:7px 10px;
+}
+
+
 
 .arps-content {
     position: relative;
@@ -46,6 +109,8 @@
     padding-left: 15px;
     background-color: aquamarine;
 }
+
+
 
 @media (min-width: 769px) {
      .arps-sidebar {
