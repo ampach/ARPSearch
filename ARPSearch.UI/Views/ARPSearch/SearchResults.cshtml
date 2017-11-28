@@ -10,11 +10,10 @@
          data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel">
         
         <div class="arps-sidebar">
-            <div class="facets-container">
-                
-            </div>
+            <div class="arp-facets-container"></div>
         </div>
         <div class="arps-content">
+            <div class="arp-search-result"></div>
         </div>
 
         <div class="arps-clear"></div>
@@ -22,8 +21,13 @@
 
         @foreach (var f in Model.Facets)
         {
-            <input type="hidden" name="facetsDef" id="@f.Key.ToID().ToShortID()" value="@f.Value"/>
+            <input type="hidden" name="facetsDef" id="fd_@f.Key.ToID().ToShortID()" value="@f.Value"/>
         }
+        @foreach (var f in Model.ResultsMapping)
+        {
+            <input type="hidden" name="searchMap" id="sr_@f.Key.ToString("D")" value="@f.Value"/>
+        }
+        <input type="hidden" name="searchMap" id="arpsearch-current-page" value="1" />
     </div>
 
     <!-- BEGIN: Underscore Template Definition. -->
@@ -46,6 +50,62 @@
     <script id="checkbox-list-facet" type="text/underscore">
         <div class="facets">
             <%= rc.Title %>
+        </div>
+    </script>
+    <script id="default-search-result" type="text/underscore">
+        <div class="search-item default">
+            <h3><%= rc.Name %></h3>
+            <div class="result-body">
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Template</div>
+                    <div class="arp-search-details-value"><%= rc.TemplateName %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Created</div>
+                    <div class="arp-search-details-value"><%= rc.CreatedDate %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Updated</div>
+                    <div class="arp-search-details-value"><%= rc.Updated %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">URL</div>
+                    <div class="arp-search-details-value"><a href="<%= rc.ItemUrl %>" target="_blank"><%= rc.ItemUrl %></a></div>
+                </div>
+                <div class="arps-clear"></div>
+            </div>            
+        </div>
+    </script>
+    <script id="media-search-result" type="text/underscore">
+        <div class="search-item media">
+            <h3><%= rc.Name %></h3>
+            <div class="arp-media-content">
+                <div class="arp-img-container">
+                    <img src="<%= rc.ItemUrl %>" />
+                </div>
+                <div class="result-body">
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Template</div>
+                        <div class="arp-search-details-value"><%= rc.TemplateName %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Created</div>
+                        <div class="arp-search-details-value"><%= rc.CreatedDate %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Updated</div>
+                        <div class="arp-search-details-value"><%= rc.Updated %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">URL</div>
+                        <div class="arp-search-details-value"><a href="<%= rc.ItemUrl %>" target="_blank"><%= rc.ItemUrl %></a></div>
+                    </div>
+                    <div class="arps-clear"></div>
+                </div>
+                
+            </div>
+            
+            <div class="arps-clear"></div>
         </div>
     </script>
     <!-- END: Underscore Template Definition. -->

@@ -15,8 +15,8 @@
             //Filters: [{ FieldName: "", FieldValue: ""}],
             //SearchBoxQuery: "",
             CurrentUrl: window.location.href,
-            //Page: ""
-        }
+            Page: document.getElementById("arpsearch-current-page").value
+    }
         ajax(root.getAttribute("data-requesturl"), data).then(function (data) {
             var obj = JSON.parse(data);
             console.log(obj);
@@ -32,11 +32,11 @@
     }
 
     function renderFacets(facets) {
-        var facetsContainer = document.querySelector(".arps-sidebar .facets-container");
+        var facetsContainer = document.querySelector(".arp-facets-container");
         if (facetsContainer) {
             for (var i = 0; i < facets.length; i++) {
                 if (facets[i].Enabled && facets[i].Values.length > 0) {
-                    var facetDefEl = document.getElementById(facets[i].ViewType);
+                    var facetDefEl = document.getElementById("fd_" + facets[i].ViewType);
                     if (facetDefEl) {
                         var facettemplateId = facetDefEl.value;
                         var teplateHtml = document.getElementById(facettemplateId);
@@ -53,7 +53,29 @@
     }
 
     function renderResultBody(results) {
-        
+        var resultsContainer = document.querySelector(".arp-search-result");
+        if (resultsContainer) {
+            for (var i = 0; i < results.length; i++) {
+                if (results[i]) {
+                    var resultsMap = document.getElementById("sr_" + results[i].TemplateId);
+                    var templateId = undefined;
+                    if (resultsMap) {
+                        templateId = resultsMap.value;
+                    } else {
+                        templateId = "default-search-result";
+                    }
+
+                    if (templateId) {
+                        var teplateHtml = document.getElementById(templateId);
+                        if (teplateHtml) {
+                            var template = uscore.template(teplateHtml.innerHTML);
+                            resultsContainer.innerHTML = resultsContainer.innerHTML + template(results[i]);
+                        }
+                    }
+                    
+                }
+            }
+        }
     }
 
     ARPsearch.search = search;

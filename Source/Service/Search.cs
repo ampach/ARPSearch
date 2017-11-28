@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using ARPSearch.Models;
@@ -7,6 +8,10 @@ using ARPSearch.Models.Items.Interfaces;
 using ARPSearch.Service.Base;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
+using Sitecore.ContentSearch.Utilities;
+using Sitecore.Data.Items;
+using Sitecore.Links;
+using Sitecore.Resources.Media;
 
 namespace ARPSearch.Service
 {
@@ -21,7 +26,18 @@ namespace ARPSearch.Service
 
         protected override void MapSearchResults(ARPSearchSeachResultModel resultModel, SearchResults<BaseIndexModel> searchResultModel)
         {
-            resultModel.Results = searchResultModel.Hits.Select(q => q.Document).ToList();
+            var urlOptions = LinkManager.GetDefaultUrlOptions();
+            var result = new List<BaseIndexModel>();
+            foreach (var model in searchResultModel.Hits.Select(q => q.Document))
+            {
+                var item = model.GetItem();
+                model.ItemUrl = item.Paths.IsMediaItem
+                    ? MediaManager.GetMediaUrl((MediaItem) item)
+                    : Sitecore.Links.LinkManager.GetItemUrl(item, urlOptions);
+
+                result.Add(model);
+            }
+            resultModel.Results = result;
         }
     }
 }

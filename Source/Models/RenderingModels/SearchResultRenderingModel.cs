@@ -14,6 +14,7 @@ namespace ARPSearch.Models.RenderingModels
         public string SearchServiceAjaxRequestUrl { get; set; }
         public string SearchResultModel { get; set; }
         public Dictionary<Guid, string> Facets { get; set; }
+        public Dictionary<Guid, string> ResultsMapping { get; set; }
 
         
 
@@ -34,6 +35,7 @@ namespace ARPSearch.Models.RenderingModels
             SearchServiceAjaxRequestUrl = ARPSearch.Settings.ARPSearchSettings.Current.SearchServiceAjaxRequestUrl;
 
             Facets = ARPSearch.Settings.ARPSearchSettings.Current.Facets;
+            ResultsMapping = ARPSearch.Settings.ARPSearchSettings.Current.ResultsMapping;
 
             IsInitialized = true;
         }
