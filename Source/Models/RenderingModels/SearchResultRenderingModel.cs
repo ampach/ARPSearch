@@ -13,6 +13,7 @@ namespace ARPSearch.Models.RenderingModels
         public string SearchService { get; set; }
         public string SearchServiceAjaxRequestUrl { get; set; }
         public string SearchResultModel { get; set; }
+        public int PageSize { get; set; }
         public Dictionary<Guid, string> Facets { get; set; }
         public Dictionary<Guid, string> ResultsMapping { get; set; }
 
@@ -30,6 +31,7 @@ namespace ARPSearch.Models.RenderingModels
             }
 
             SearchConfigurationId = searchConfiguration.ItemId;
+            PageSize = searchConfiguration.ResultsPerPage;
             SearchService = searchConfiguration.SearchServiceDefinition.SearchServiceReference;
             SearchResultModel = searchConfiguration.SearchServiceDefinition.SearchResultModel;
             SearchServiceAjaxRequestUrl = ARPSearch.Settings.ARPSearchSettings.Current.SearchServiceAjaxRequestUrl;

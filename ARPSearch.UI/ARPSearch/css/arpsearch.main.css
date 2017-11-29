@@ -29,6 +29,9 @@
 
 .arps-container {
     padding: 20px 0;
+    background-color: white;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .arps-sidebar {
@@ -106,7 +109,6 @@
 .arps-content {
     position: relative;
     min-height: 1px;
-    padding-right: 15px;
     padding-left: 15px;
 }
 
@@ -124,6 +126,7 @@
 
 .arp-search-result .search-item .arp-search-details-value{
     padding: 5px;
+    font-weight: 600;
 }
 
 .arp-search-result .search-item .arp-img-container{
@@ -158,6 +161,29 @@
     margin-top: 0;
 }
 
+.arp-showmore-container {
+    width: 100%; 
+    text-align: center;
+}
+
+.arp-showmore-container a{
+    text-decoration: none; 
+    cursor: pointer;
+}
+.arp-showmore-container a:after {
+    display: block;
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    right: calc(50% - 15px);
+    width: 15px;
+    height: 15px;
+    border-right: 2px solid silver;
+    border-bottom: 2px solid silver;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
 
 @media (min-width: 769px) {
      .arps-sidebar {

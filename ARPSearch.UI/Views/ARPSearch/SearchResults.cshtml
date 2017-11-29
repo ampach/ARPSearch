@@ -7,13 +7,14 @@
 
     <div id="arpsearch-results" class="arps-container"
          data-confid="@Model.SearchConfigurationId" data-requesturl="@Model.SearchServiceAjaxRequestUrl"
-         data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel">
+         data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel" data-pagesize="@Model.PageSize">
         
         <div class="arps-sidebar">
             <div class="arp-facets-container"></div>
         </div>
         <div class="arps-content">
             <div class="arp-search-result"></div>
+            <div class="arp-showmore-container" ><a class="arp-showmore-button" id="arp-showmore" >Show More</a></div>
         </div>
 
         <div class="arps-clear"></div>
@@ -27,7 +28,8 @@
         {
             <input type="hidden" name="searchMap" id="sr_@f.Key.ToString("D")" value="@f.Value"/>
         }
-        <input type="hidden" name="searchMap" id="arpsearch-current-page" value="1" />
+        <input type="hidden" id="arpsearch-current-page" value="1" />
+        <input type="hidden" id="arpsearch-total-count" value="0" />
     </div>
 
     <!-- BEGIN: Underscore Template Definition. -->
@@ -37,7 +39,7 @@
                 <%= rc.Title %>
             </label> 
             <div class="facet-body">
-                <select data-category="<%= rc.FieldName %>">
+                <select class="arp-filter" data-category="<%= rc.FieldName %>">
                     <option value="-1">Select an option</option>
                     <% uscore.map(rc.Values, function(n){ %>
                     <option <% if(n.IsSelected) {%> selected="selected" <% } %> value="<%= n.Value %>"><%= n.Name %></option>

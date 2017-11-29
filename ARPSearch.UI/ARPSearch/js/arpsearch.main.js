@@ -1,7 +1,7 @@
 ﻿; (function () {
     function ARPsearch() { }
 
-    
+    ARPsearch.latestChangedFilter = "";
 
     function search() {
         var root = document.getElementById("arpsearch-results");
@@ -11,12 +11,13 @@
             searchService: root.getAttribute("data-searchservice"),
             searchResult: root.getAttribute("data-searchresult"),
 
-            //LastChangedFilterName: "",
-            //Filters: [{ FieldName: "", FieldValue: ""}],
+            LastChangedFilterName: ARPsearch.latestChangedFilter,
+            Filters: getFilters(),
             //SearchBoxQuery: "",
             CurrentUrl: window.location.href,
             Page: document.getElementById("arpsearch-current-page").value
-    }
+        }
+
         ajax(root.getAttribute("data-requesturl"), data).then(function (data) {
             var obj = JSON.parse(data);
             console.log(obj);
@@ -26,14 +27,99 @@
         });
     }
 
+    function getFilters() {
+        var result = [];
+        var dropdounFilters = document.querySelectorAll("select.arp-filter");
+        for (var i = 0; i < dropdounFilters.length; i++) {
+            var category = dropdounFilters[i].getAttribute("data-category");
+            var val = dropdounFilters[i].value;
+            if (val && val !== "-1") {
+                result.push({
+                    FieldName: category,
+                    FieldValue: val
+                });
+            }
+        }
+        return result;
+    }
+
+    function initevents() {
+        var showMoreButtoms = document.querySelectorAll(".arp-showmore-button");
+        for (var i = 0; i < showMoreButtoms.length; i++) {
+            showMoreButtoms[i].addEventListener('click', showMore, false);
+        }
+
+        document.addEventListener("filterChange", filterChangeHandler, false);
+
+        document.querySelector('body').addEventListener('change', function (event) {
+
+            if (event.target.tagName.toLowerCase() === 'select' && hasClass(event.target, 'arp-filter')) {
+                triggerFilterChanngedEvent(event.target);
+            }
+
+        });
+    }
+
+    function hasClass(element, cls) {
+        return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+    }
+
+    function triggerFilterChanngedEvent(e) {
+        if (window.CustomEvent) {
+
+            var event = new CustomEvent("filterChange", {
+                detail: {},
+                bubbles: true,
+                cancelable: true
+            });
+            ARPsearch.latestChangedFilter = e.getAttribute("data-category");
+            document.querySelector(".arp-search-result").innerHTML = "";
+            e.dispatchEvent(event);
+        }
+    }
+
+    
+
+    // newMessage event handler
+    function filterChangeHandler(e) {
+        console.log(e);
+        search();
+    }
+
+    function showMore() {
+        var page = document.getElementById("arpsearch-current-page");
+        if (page) {
+            var newValue = parseInt(page.value) + 1;
+            page.value = newValue;
+            search();
+
+            var rootPagesizeAttr = document.getElementById("arpsearch-results").getAttribute("data-pagesize");
+            var pageSize = parseInt(rootPagesizeAttr);
+            var totalResultCount = parseInt(document.getElementById("arpsearch-total-count").value);
+
+            if ((newValue * pageSize) >= totalResultCount) {
+                var showMoreButtoms = document.querySelectorAll(".arp-showmore-button");
+                for (var i = 0; i < showMoreButtoms.length; i++) {
+                    showMoreButtoms[i].remove();
+                }
+            }
+        }
+    }
+
     function renderSearchResults(data) {
         renderFacets(data.Facets);
         renderResultBody(data.Results);
+        var totalResultCount = document.getElementById("arpsearch-total-count");
+        if (totalResultCount) {
+            totalResultCount.value = data.TotalResult;
+        }
     }
 
     function renderFacets(facets) {
         var facetsContainer = document.querySelector(".arp-facets-container");
         if (facetsContainer) {
+            facetsContainer.innerHTML = "";
+
             for (var i = 0; i < facets.length; i++) {
                 if (facets[i].Enabled && facets[i].Values.length > 0) {
                     var facetDefEl = document.getElementById("fd_" + facets[i].ViewType);
@@ -98,7 +184,7 @@
     ready(function () {
         initUnderscore();
         search();
-
+        initevents();
         //var template = uscore.template(
         //    document.getElementById('result-template').innerHTML
         //);
