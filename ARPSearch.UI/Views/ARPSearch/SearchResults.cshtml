@@ -50,8 +50,27 @@
         </div>
     </script>
     <script id="checkbox-list-facet" type="text/underscore">
-        <div class="facets">
-            <%= rc.Title %>
+        <div class="facet checkbox-facet">
+            <label>
+                <%= rc.Title %>
+            </label>
+            <div class="facet-body">
+                <% uscore.map(rc.Values, function(n){ %>
+                <input type="checkbox" class="arp-filter" id="<%= n.Value %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" value="<%= n.Value %>" <% if(n.IsSelected) {%> checked="checked" <% } %> /> <label for="<%= n.Value %>"><%= n.Name %></label> <br />              
+                <% })%>
+            </div>
+        </div>
+    </script>
+    <script id="checkbox-facet" type="text/underscore">
+        <div class="facet checkbox-facet">
+            <label>
+                <%= rc.Title %>
+            </label>
+            <div class="facet-body">    
+                <% if(uscore.where(rc.Values, {'Value': 'true'}).length > 0 || uscore.where(rc.Values, {'Value': '1'}).length > 0) { %>            
+                    <input type="checkbox" class="arp-filter single" id="<%= rc.ID %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1")){%> value="<%= n.Value %>" <% } }) %>  <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1") && n.IsSelected){%> checked="checked" <% } }) %> /> <label for="<%= rc.ID %>"><%= rc.Title %></label> <br />                              
+                <% } %>
+            </div>
         </div>
     </script>
     <script id="default-search-result" type="text/underscore">

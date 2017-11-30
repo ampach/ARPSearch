@@ -47,7 +47,7 @@
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 23px 0 rgba(0, 0, 0, 0.19);
     background-color: #fff;
 }
-.arp-facets-container label{
+.arp-facets-container .facet > label{
     display: block;
     width: 100%;
     padding: 5px;

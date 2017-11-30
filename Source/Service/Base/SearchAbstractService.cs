@@ -383,10 +383,12 @@ namespace ARPSearch.Service.Base
                 var predicat = PredicateBuilder.True<TIndexModel>();
                 foreach (var searchFilter in searchFilters)
                 {
+                    var filterPredicat = PredicateBuilder.False<TIndexModel>();
                     foreach (var filter in searchFilter)
                     {
-                        predicat = predicat.And(q => q[filter.FieldName] == filter.FieldValue);
+                        filterPredicat = filterPredicat.Or(q => q[filter.FieldName] == filter.FieldValue);
                     }
+                    predicat = predicat.And(filterPredicat);
                 }
 
                 var expression = predicateFilterGlobal.And(predicat);
@@ -404,11 +406,13 @@ namespace ARPSearch.Service.Base
                 {
                     if (groupFilter.Key != lastChangedFilterName)
                     {
+                        var filterPredicat = PredicateBuilder.False<TIndexModel>();
                         foreach (var filter in groupFilter)
                         {
-                            predicat = predicat.And(q => q[filter.FieldName] == filter.FieldValue);
+                            filterPredicat = filterPredicat.Or(q => q[filter.FieldName] == filter.FieldValue);
                             i++;
                         }
+                        predicat = predicat.And(filterPredicat);
                     }
                 }
 
@@ -439,6 +443,7 @@ namespace ARPSearch.Service.Base
                 var temp2Values = new List<FacetValueModel>();
                 foreach (var facetModel in groupedResult)
                 {
+                    temp2.ID = facetModel.ID;
                     temp2.FieldName = facetModel.FieldName;
                     temp2.Enabled = facetModel.Enabled;
                     temp2.Title = facetModel.Title;
@@ -565,6 +570,7 @@ namespace ARPSearch.Service.Base
             {
                 Enabled = true,
                 FieldName = category.Name,
+                ID = facetDefinition.ItemId.ToShortID().ToString(),
                 SortOrder = facetDefinition.SortOrder,
                 Title = !String.IsNullOrWhiteSpace(facetDefinition.Title) ? facetDefinition.Title : category.Name,
                 ViewType = facetDefinition.FacetViewType,

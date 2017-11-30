@@ -10,6 +10,8 @@ namespace ARPSearch.Models.Facets
         [DataMember]
         public string Title { get; set; }
         [DataMember]
+        public string ID { get; set; }
+        [DataMember]
         public string FieldName { get; set; }
         [DataMember]
         public bool Enabled { get; set; }

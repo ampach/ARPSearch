@@ -1,7 +1,7 @@
 ﻿; (function () {
     function ARPsearch() { }
 
-    ARPsearch.latestChangedFilter = "";
+    ARPsearch.latestChangedFilter = [];
 
     function search() {
         var root = document.getElementById("arpsearch-results");
@@ -11,7 +11,7 @@
             searchService: root.getAttribute("data-searchservice"),
             searchResult: root.getAttribute("data-searchresult"),
 
-            LastChangedFilterName: ARPsearch.latestChangedFilter,
+            LastChangedFilterName: ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length-1],
             Filters: getFilters(),
             //SearchBoxQuery: "",
             CurrentUrl: window.location.href,
@@ -40,6 +40,21 @@
                 });
             }
         }
+
+        var checkboxFilters = document.querySelectorAll("input.arp-filter[type='checkbox']");
+        for (var i = 0; i < checkboxFilters.length; i++) {
+            if (checkboxFilters[i].checked) {
+                var category = checkboxFilters[i].getAttribute("data-category");
+
+                var val = checkboxFilters[i].value;
+                if (val && val !== "-1") {
+                    result.push({
+                        FieldName: category,
+                        FieldValue: val
+                    });
+                }
+            }
+        }
         return result;
     }
 
@@ -54,7 +69,10 @@
         document.querySelector('body').addEventListener('change', function (event) {
 
             if (event.target.tagName.toLowerCase() === 'select' && hasClass(event.target, 'arp-filter')) {
-                triggerFilterChanngedEvent(event.target);
+                triggerSelectFilterChanngedEvent(event.target);
+            }
+            if (event.target.tagName.toLowerCase() === 'input' && event.target.type.toLowerCase() === 'checkbox' && hasClass(event.target, 'arp-filter')) {
+                triggerSelectFilterChanngedEvent(event.target);
             }
 
         });
@@ -64,7 +82,7 @@
         return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
     }
 
-    function triggerFilterChanngedEvent(e) {
+    function triggerSelectFilterChanngedEvent(e) {
         if (window.CustomEvent) {
 
             var event = new CustomEvent("filterChange", {
@@ -72,8 +90,22 @@
                 bubbles: true,
                 cancelable: true
             });
-            ARPsearch.latestChangedFilter = e.getAttribute("data-category");
+            if (e.value !== "-1") {
+                if (hasClass(e, 'single') && e.tagName.toLowerCase() === 'input' && e.type.toLowerCase() === 'checkbox') {
+                    if (e.checked) {
+                        ARPsearch.latestChangedFilter.push(e.getAttribute("data-category"));
+                    } else {
+                        if (ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length - 1] == e.getAttribute("data-category")) {
+                            ARPsearch.latestChangedFilter.pop();
+                        }
+                    }
+                } else {
+                    ARPsearch.latestChangedFilter.push(e.getAttribute("data-category"));
+                }
+                
+            }
             document.querySelector(".arp-search-result").innerHTML = "";
+            document.getElementById("arpsearch-current-page").value = 1;
             e.dispatchEvent(event);
         }
     }
@@ -185,35 +217,6 @@
         initUnderscore();
         search();
         initevents();
-        //var template = uscore.template(
-        //    document.getElementById('result-template').innerHTML
-        //);
-
-        //var templateData = {
-        //    listTitle: "Olympic Volleyball Players",
-        //    listItems: [
-        //        {
-        //            name: "Misty May-Treanor",
-        //            hasOlympicGold: true
-        //        },
-        //        {
-        //            name: "Kerri Walsh Jennings",
-        //            hasOlympicGold: true
-        //        },
-        //        {
-        //            name: "Jennifer Kessy",
-        //            hasOlympicGold: false
-        //        },
-        //        {
-        //            name: "April Ross",
-        //            hasOlympicGold: false
-        //        }
-        //    ]
-        //};
-
-        //var r = template(templateData);
-
-        //document.getElementsByClassName("arps-content")[0].innerHTML = r;
     });
 
     function initUnderscore() {
