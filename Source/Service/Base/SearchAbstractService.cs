@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
 using ARPSearch.Enums;
 using ARPSearch.Helpers;
 using ARPSearch.Models;
@@ -11,7 +10,6 @@ using ARPSearch.Models.Facets;
 using ARPSearch.Models.Items;
 using ARPSearch.Models.Items.Interfaces;
 using Sitecore;
-using Sitecore.Common;
 using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
@@ -25,7 +23,7 @@ namespace ARPSearch.Service.Base
     /// <typeparam name="TRequest">Search Request Model. It has to implement ISearchRequestModel interface.</typeparam>
     /// <typeparam name="TIndexModel">Model which will be returned from index.</typeparam>
     /// <typeparam name="TResult">Model that includes the search result with additional data like facets, count of results.</typeparam>
-    public abstract class SearchAbstractService<TRequest, TIndexModel, TResult>
+    public abstract class SearchAbstractService<TRequest, TIndexModel, TResult> : ISearchService<TRequest, TResult>
         where TRequest : ISearchRequestModel, new()
         where TResult : BaseSearchResultModel, new()
         where TIndexModel : BaseIndexModel, new()
@@ -230,7 +228,7 @@ namespace ARPSearch.Service.Base
             }
             catch (Exception ex)
             {
-                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.ToString(), ex);
+                Logging.Log.Error("Error occurred during getting facets: Error message:" + ex.Message, ex);
             }
             return new List<FacetModel>();
         }
@@ -296,25 +294,26 @@ namespace ARPSearch.Service.Base
                 return;
             }
 
-            if (HttpContext.Current == null)
+            if (String.IsNullOrWhiteSpace(model.CurrentUrl))
             {
                 Logging.Log.Debug("Loading search parameters from query string is impossible due the HttpContext is null.");
                 return;
             }
+            var url = new Sitecore.Text.UrlString(model.CurrentUrl);
 
-            if (HttpContext.Current.Request.QueryString.Count < 1)
+            if (url.Parameters.Count < 1)
             {
                 Logging.Log.Debug("There is no any query string parameters in the current request.");
                 return;
             }
 
-            var query = HttpContext.Current.Request.QueryString["q"];
+            var query = url.Parameters.Get("q");
             if (!string.IsNullOrWhiteSpace(query))
             {
                 model.SearchBoxQuery = query;
             }
 
-            var querystrings = HttpContext.Current.Request.QueryString.ToKeyValues().Where(q => q.Key != "q").ToList();
+            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && !string.IsNullOrWhiteSpace(q.Value)).ToList();
             if (!querystrings.Any())
                 return;
 
@@ -384,10 +383,12 @@ namespace ARPSearch.Service.Base
                 var predicat = PredicateBuilder.True<TIndexModel>();
                 foreach (var searchFilter in searchFilters)
                 {
+                    var filterPredicat = PredicateBuilder.False<TIndexModel>();
                     foreach (var filter in searchFilter)
                     {
-                        predicat = predicat.And(q => q[filter.FieldName] == filter.FieldValue);
+                        filterPredicat = filterPredicat.Or(q => q[filter.FieldName] == filter.FieldValue);
                     }
+                    predicat = predicat.And(filterPredicat);
                 }
 
                 var expression = predicateFilterGlobal.And(predicat);
@@ -405,11 +406,13 @@ namespace ARPSearch.Service.Base
                 {
                     if (groupFilter.Key != lastChangedFilterName)
                     {
+                        var filterPredicat = PredicateBuilder.False<TIndexModel>();
                         foreach (var filter in groupFilter)
                         {
-                            predicat = predicat.And(q => q[filter.FieldName] == filter.FieldValue);
+                            filterPredicat = filterPredicat.Or(q => q[filter.FieldName] == filter.FieldValue);
                             i++;
                         }
+                        predicat = predicat.And(filterPredicat);
                     }
                 }
 
@@ -440,6 +443,7 @@ namespace ARPSearch.Service.Base
                 var temp2Values = new List<FacetValueModel>();
                 foreach (var facetModel in groupedResult)
                 {
+                    temp2.ID = facetModel.ID;
                     temp2.FieldName = facetModel.FieldName;
                     temp2.Enabled = facetModel.Enabled;
                     temp2.Title = facetModel.Title;
@@ -566,6 +570,7 @@ namespace ARPSearch.Service.Base
             {
                 Enabled = true,
                 FieldName = category.Name,
+                ID = facetDefinition.ItemId.ToShortID().ToString(),
                 SortOrder = facetDefinition.SortOrder,
                 Title = !String.IsNullOrWhiteSpace(facetDefinition.Title) ? facetDefinition.Title : category.Name,
                 ViewType = facetDefinition.FacetViewType,
@@ -591,8 +596,8 @@ namespace ARPSearch.Service.Base
                     {
                         return String.Empty;
                     }
-
-                    var item = Context.Database.GetItem(id.ToID());
+                    
+                    var item = Context.Database.GetItem(Sitecore.Data.ID.Parse(id));
 
                     if (item != null && referenceFacetDefinition.ValueTitleAccessor != null && referenceFacetDefinition.ValueTitleAccessor.FacetTitleField != null)
                     {

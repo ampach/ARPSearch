@@ -1,0 +1,137 @@
+﻿@using Sitecore.Common
+@model ARPSearch.Models.RenderingModels.SearchResultRenderingModel
+
+@if (Model.IsInitialized)
+{
+    <link href="~/ARPSearch/css/arpsearch.main.css" rel="stylesheet" />
+
+    <div id="arpsearch-results" class="arps-container"
+         data-confid="@Model.SearchConfigurationId" data-requesturl="@Model.SearchServiceAjaxRequestUrl"
+         data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel" data-pagesize="@Model.PageSize">
+        
+        <div class="arps-sidebar">
+            <div class="arp-facets-container"></div>
+        </div>
+        <div class="arps-content">
+            <div class="arp-search-result"></div>
+            <div class="arp-showmore-container" ><a class="arp-showmore-button" id="arp-showmore" >Show More</a></div>
+        </div>
+
+        <div class="arps-clear"></div>
+
+
+        @foreach (var f in Model.Facets)
+        {
+            <input type="hidden" name="facetsDef" id="fd_@f.Key.ToID().ToShortID()" value="@f.Value"/>
+        }
+        @foreach (var f in Model.ResultsMapping)
+        {
+            <input type="hidden" name="searchMap" id="sr_@f.Key.ToString("D")" value="@f.Value"/>
+        }
+        <input type="hidden" id="arpsearch-current-page" value="1" />
+        <input type="hidden" id="arpsearch-total-count" value="0" />
+    </div>
+
+    <!-- BEGIN: Underscore Template Definition. -->
+    <script id="dropdown-facet" type="text/underscore">
+        <div class="facet dropdown-facet">
+            <label>
+                <%= rc.Title %>
+            </label> 
+            <div class="facet-body">
+                <select class="arp-filter" data-category="<%= rc.FieldName %>">
+                    <option value="-1">Select an option</option>
+                    <% uscore.map(rc.Values, function(n){ %>
+                    <option <% if(n.IsSelected) {%> selected="selected" <% } %> value="<%= n.Value %>"><%= n.Name %></option>
+                    <% })%>
+                </select>
+                <span></span>
+            </div>
+        </div>
+    </script>
+    <script id="checkbox-list-facet" type="text/underscore">
+        <div class="facet checkbox-facet">
+            <label>
+                <%= rc.Title %>
+            </label>
+            <div class="facet-body">
+                <% uscore.map(rc.Values, function(n){ %>
+                <input type="checkbox" class="arp-filter" id="<%= n.Value %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" value="<%= n.Value %>" <% if(n.IsSelected) {%> checked="checked" <% } %> /> <label for="<%= n.Value %>"><%= n.Name %></label> <br />              
+                <% })%>
+            </div>
+        </div>
+    </script>
+    <script id="checkbox-facet" type="text/underscore">
+        <div class="facet checkbox-facet">
+            <label>
+                <%= rc.Title %>
+            </label>
+            <div class="facet-body">    
+                <% if(uscore.where(rc.Values, {'Value': 'true'}).length > 0 || uscore.where(rc.Values, {'Value': '1'}).length > 0) { %>            
+                    <input type="checkbox" class="arp-filter single" id="<%= rc.ID %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1")){%> value="<%= n.Value %>" <% } }) %>  <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1") && n.IsSelected){%> checked="checked" <% } }) %> /> <label for="<%= rc.ID %>"><%= rc.Title %></label> <br />                              
+                <% } %>
+            </div>
+        </div>
+    </script>
+    <script id="default-search-result" type="text/underscore">
+        <div class="search-item default">
+            <h3><%= rc.Name %></h3>
+            <div class="result-body">
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Template</div>
+                    <div class="arp-search-details-value"><%= rc.TemplateName %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Created</div>
+                    <div class="arp-search-details-value"><%= rc.CreatedDate %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">Updated</div>
+                    <div class="arp-search-details-value"><%= rc.Updated %></div>
+                </div>
+                <div class="arp-search-details-row">
+                    <div class="arp-search-details-title">URL</div>
+                    <div class="arp-search-details-value"><a href="<%= rc.ItemUrl %>" target="_blank"><%= rc.ItemUrl %></a></div>
+                </div>
+                <div class="arps-clear"></div>
+            </div>            
+        </div>
+    </script>
+    <script id="media-search-result" type="text/underscore">
+        <div class="search-item media">
+            <h3><%= rc.Name %></h3>
+            <div class="arp-media-content">
+                <div class="arp-img-container">
+                    <img src="<%= rc.ItemUrl %>" />
+                </div>
+                <div class="result-body">
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Template</div>
+                        <div class="arp-search-details-value"><%= rc.TemplateName %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Created</div>
+                        <div class="arp-search-details-value"><%= rc.CreatedDate %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">Updated</div>
+                        <div class="arp-search-details-value"><%= rc.Updated %></div>
+                    </div>
+                    <div class="arp-search-details-row">
+                        <div class="arp-search-details-title">URL</div>
+                        <div class="arp-search-details-value"><a href="<%= rc.ItemUrl %>" target="_blank"><%= rc.ItemUrl %></a></div>
+                    </div>
+                    <div class="arps-clear"></div>
+                </div>
+                
+            </div>
+            
+            <div class="arps-clear"></div>
+        </div>
+    </script>
+    <!-- END: Underscore Template Definition. -->
+
+    <script src="~/ARPSearch/js/underscore-min.js"></script>
+    <script src="~/ARPSearch/js/arpsearch.main.js" ></script>
+    
+}

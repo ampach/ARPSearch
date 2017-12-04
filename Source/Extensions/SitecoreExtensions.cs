@@ -20,7 +20,7 @@ namespace ARPSearch.Extensions
         {
             var field = item.GetField(fieldName);
 
-            if (field == null || !field.HasValue) return 0;
+            if (field == null) return 0;
 
             var result = 0;
             int.TryParse(field.Value, out result);

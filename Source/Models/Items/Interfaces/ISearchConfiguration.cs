@@ -12,5 +12,6 @@ namespace ARPSearch.Models.Items.Interfaces
         bool IsPaginated { get; set; }
         int ResultsPerPage { get; set; }
         bool LoadQueryString { get; set; }
+        SearchServiceDefinition SearchServiceDefinition { get; set; }
     }
 }

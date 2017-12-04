@@ -13,6 +13,8 @@ namespace ARPSearch.Models
 
         [DataMember]
         public string SearchBoxQuery { get; set; }
+        [DataMember]
+        public string CurrentUrl { get; set; }
 
         [DataMember]
         public int Page { get; set; }
