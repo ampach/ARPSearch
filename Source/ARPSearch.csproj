@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ARPSearch</RootNamespace>
     <AssemblyName>ARPSearch</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
@@ -92,6 +93,7 @@
     <Compile Include="Models\ISearchRequestModel.cs" />
     <Compile Include="Models\Items\BaseItem.cs" />
     <Compile Include="Models\Items\FacetDefinition.cs" />
+    <Compile Include="Models\Items\CheckboxFacetDefinition.cs" />
     <Compile Include="Models\Items\SearchServiceDefinition.cs" />
     <Compile Include="Models\Items\FacetValueTitleAccessor.cs" />
     <Compile Include="Models\Items\Interfaces\ISearchConfiguration.cs" />

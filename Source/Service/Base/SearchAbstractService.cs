@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
 using ARPSearch.Enums;
 using ARPSearch.Helpers;
 using ARPSearch.Models;
@@ -244,12 +245,20 @@ namespace ARPSearch.Service.Base
         {
             if (!String.IsNullOrWhiteSpace(requestModel.SearchBoxQuery))
             {
-                var query = requestModel.SearchBoxQuery;
+                var querySplitted = requestModel.SearchBoxQuery.Split(' ');
 
                 var predicate = PredicateBuilder.False<TIndexModel>();
 
-                predicate = predicate.Or(item => item.Name.Contains(query).Boost(1.5f));
-                predicate = predicate.Or(item => item.Content.Contains(query));
+                var namePredicate = PredicateBuilder.True<TIndexModel>();
+                var contentPredicate = PredicateBuilder.True<TIndexModel>();
+                foreach (var query in querySplitted)
+                {
+
+                    namePredicate = namePredicate.And(item => item.Name.Contains(query).Boost(1.5f));
+                    contentPredicate = contentPredicate.And(item => item.Content.Contains(query));
+                }
+
+                predicate = predicate.Or(namePredicate).Or(contentPredicate);
 
                 return predicate;
             }
@@ -310,7 +319,8 @@ namespace ARPSearch.Service.Base
             var query = url.Parameters.Get("q");
             if (!string.IsNullOrWhiteSpace(query))
             {
-                model.SearchBoxQuery = query;
+                var decoded = HttpUtility.UrlDecode(query);
+                model.SearchBoxQuery = decoded;
             }
 
             var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && !string.IsNullOrWhiteSpace(q.Value)).ToList();
@@ -606,6 +616,12 @@ namespace ARPSearch.Service.Base
                         if (field != null) return !String.IsNullOrWhiteSpace(field.Value) ? field.Value : item.Name; 
                     }
                 }
+            }
+
+            if (facetDefinition is CheckboxFacetDefinition)
+            {
+                var checkboxFacetDefinition = facetDefinition as CheckboxFacetDefinition;
+                return checkboxFacetDefinition.CheckboxLabel;
             }
 
             if (facetDefinition is TextFacetDefenition)

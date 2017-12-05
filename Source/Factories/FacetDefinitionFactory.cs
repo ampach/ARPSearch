@@ -14,6 +14,7 @@ namespace ARPSearch.Factories
             {
                 case TextFacetDefenition.TemplateName: return new TextFacetDefenition(item);
                 case ReferenceFacetDefinition.TemplateName: return new ReferenceFacetDefinition(item);
+                case CheckboxFacetDefinition.TemplateName: return new CheckboxFacetDefinition(item);
 
                 default: return null;
             }

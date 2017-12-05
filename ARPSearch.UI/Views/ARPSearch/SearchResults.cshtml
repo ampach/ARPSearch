@@ -68,7 +68,7 @@
             </label>
             <div class="facet-body">    
                 <% if(uscore.where(rc.Values, {'Value': 'true'}).length > 0 || uscore.where(rc.Values, {'Value': '1'}).length > 0) { %>            
-                    <input type="checkbox" class="arp-filter single" id="<%= rc.ID %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1")){%> value="<%= n.Value %>" <% } }) %>  <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1") && n.IsSelected){%> checked="checked" <% } }) %> /> <label for="<%= rc.ID %>"><%= rc.Title %></label> <br />                              
+                    <input type="checkbox" class="arp-filter single" id="<%= rc.ID %>" name="<%= rc.FieldName %>" data-category="<%= rc.FieldName %>" <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1")){%> value="<%= n.Value %>" <% } }) %>  <% uscore.map(rc.Values, function(n){ if((n.Value == "true" || n.Value == "1") && n.IsSelected){%> checked="checked" <% } }) %> /> <label for="<%= rc.ID %>"><%= rc.Values[0].Name %></label> <br />                              
                 <% } %>
             </div>
         </div>
