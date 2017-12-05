@@ -27,13 +27,23 @@ namespace ARPSearch.Service
         protected override void MapSearchResults(ARPSearchSeachResultModel resultModel, SearchResults<BaseIndexModel> searchResultModel)
         {
             var urlOptions = LinkManager.GetDefaultUrlOptions();
+            urlOptions.LanguageEmbedding = LanguageEmbedding.AsNeeded;
+
             var result = new List<BaseIndexModel>();
             foreach (var model in searchResultModel.Hits.Select(q => q.Document))
             {
                 var item = model.GetItem();
-                model.ItemUrl = item.Paths.IsMediaItem
-                    ? MediaManager.GetMediaUrl((MediaItem) item)
-                    : Sitecore.Links.LinkManager.GetItemUrl(item, urlOptions);
+                if (item == null)
+                {
+                    model.ItemUrl = model.Url;
+                }
+                else
+                {
+                    model.ItemUrl = item.Paths.IsMediaItem
+                        ? MediaManager.GetMediaUrl((MediaItem)item)
+                        : Sitecore.Links.LinkManager.GetItemUrl(item, urlOptions);
+                }
+                
 
                 result.Add(model);
             }

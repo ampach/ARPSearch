@@ -1,40 +1,39 @@
 ﻿@using Sitecore.Mvc
 @{
-  Layout = null;
+    Layout = null;
 }
- 
+
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
- 
-<head runat="server">
+<head>
     <title>Welcome to Sitecore</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="CODE_LANGUAGE" content="C#" />
-  <meta name="vs_defaultClientScript" content="JavaScript" />
-  <meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" />
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300italic,400italic,600italic,700italic,300,600,700,800" rel="stylesheet" type="text/css" />
-  <link href="/default.css" rel="stylesheet" />
- 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="CODE_LANGUAGE" content="C#" />
+    <meta name="vs_defaultClientScript" content="JavaScript" />
+    <meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300italic,400italic,600italic,700italic,300,600,700,800" rel="stylesheet" type="text/css" />
+    <link href="/default.css" rel="stylesheet" />
+
 </head>
 <body>
-<div id="MainPanel">
-    <div id="CenterColumn">
-        <div id="InnerCenter">
-            <div id="Header">
-                <img src="-/media/Default Website/sc_logo.ashx" alt="Sitecore" id="scLogo" />
+    <div id="MainPanel">
+        <div id="CenterColumn">
+            <div id="InnerCenter">
+                <div id="Header">
+                    <img src="-/media/Default Website/sc_logo.ashx" alt="Sitecore" id="scLogo" />
+                </div>
+                <div id="Content">
+                    @Html.Sitecore().Placeholder("main")
+                </div>
+                <div id="Footer">
+                    <hr class="divider" />&#169; @Sitecore.DateUtil.ToServerTime(DateTime.UtcNow).Year.ToString() Sitecore
+                </div>
             </div>
-            <div id="Content">
-                @Html.Sitecore().Placeholder("main")
-            </div>
-            <div id="Footer">
-                <hr class="divider" />&#169; @Sitecore.DateUtil.ToServerTime(DateTime.UtcNow).Year.ToString() Sitecore
-            </div>
+
         </div>
 
     </div>
-    
-</div>
 </body>
 </html>
