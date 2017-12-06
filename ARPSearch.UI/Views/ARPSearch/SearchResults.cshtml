@@ -10,11 +10,16 @@
          data-searchservice="@Model.SearchService" data-searchresult="@Model.SearchResultModel" data-pagesize="@Model.PageSize">
         
         <div class="arps-sidebar">
-            <div class="arp-facets-container"></div>
+            <div id="arp-facets-container" class="arp-facets-container"></div>
         </div>
         <div class="arps-content">
-            <div class="arp-search-result"></div>
-            <div class="arp-showmore-container" ><a class="arp-showmore-button" id="arp-showmore" >Show More</a></div>
+            <div class="arp-search-query">
+                <label for="arp-search-query-input"><input id="arp-search-query-input" class="arp-search-query-input" type="text" /><span id="arp-search-query-trigger"></span></label>
+            </div>
+            <div id="arp-search-result" class="arp-search-result"></div>
+            <div class="arp-showmore-container"><a class="arp-showmore-button" id="arp-showmore">Show More</a>
+            </div>
+            <div id="arp-search-no-results" class="arps-hide">There are no results</div>
         </div>
 
         <div class="arps-clear"></div>

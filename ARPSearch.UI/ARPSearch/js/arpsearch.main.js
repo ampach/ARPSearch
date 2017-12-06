@@ -5,23 +5,24 @@
 
     function search() {
         var root = document.getElementById("arpsearch-results");
+        var qb = document.getElementById("arp-search-query-input");
 
         var data = {
             confID: root.getAttribute("data-confid"),
             searchService: root.getAttribute("data-searchservice"),
             searchResult: root.getAttribute("data-searchresult"),
 
-            LastChangedFilterName: ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length-1],
+            LastChangedFilterName: ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length - 1],
             Filters: getFilters(),
-            //SearchBoxQuery: "",
+            SearchBoxQuery: qb ? qb.value : "",
             CurrentUrl: window.location.href,
             Page: document.getElementById("arpsearch-current-page").value
         }
 
         ajax(root.getAttribute("data-requesturl"), data).then(function (data) {
             var obj = JSON.parse(data);
-            console.log(obj);
             renderSearchResults(obj);
+            checkVisibilityOfShowMore();
         }, function (error) {
             console.log(error);
         });
@@ -65,6 +66,7 @@
         }
 
         document.addEventListener("filterChange", filterChangeHandler, false);
+        document.getElementById("arp-search-query-trigger").addEventListener("click", queryChangeHandler, false);
 
         document.querySelector('body').addEventListener('change', function (event) {
 
@@ -75,6 +77,13 @@
                 triggerSelectFilterChanngedEvent(event.target);
             }
 
+        });
+
+        var qbInput = document.getElementById("arp-search-query-input");
+        qbInput.addEventListener("keydown", function (e) {
+            if (e.keyCode === 13) {
+                queryChangeHandler(e);
+            }
         });
     }
 
@@ -90,31 +99,44 @@
                 bubbles: true,
                 cancelable: true
             });
+
+            var category = e.getAttribute("data-category");
+
             if (e.value !== "-1") {
-                if (hasClass(e, 'single') && e.tagName.toLowerCase() === 'input' && e.type.toLowerCase() === 'checkbox') {
+                if (hasClass(e, 'single') &&
+                    e.tagName.toLowerCase() === 'input' &&
+                    e.type.toLowerCase() === 'checkbox') {
                     if (e.checked) {
-                        ARPsearch.latestChangedFilter.push(e.getAttribute("data-category"));
+                        ARPsearch.latestChangedFilter.push(category);
                     } else {
-                        if (ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length - 1] == e.getAttribute("data-category")) {
+                        if (ARPsearch.latestChangedFilter[ARPsearch.latestChangedFilter.length - 1] ==
+                            category) {
                             ARPsearch.latestChangedFilter.pop();
                         }
                     }
                 } else {
-                    ARPsearch.latestChangedFilter.push(e.getAttribute("data-category"));
+                    ARPsearch.latestChangedFilter.push(category);
                 }
-                
+
             }
+
             document.querySelector(".arp-search-result").innerHTML = "";
             document.getElementById("arpsearch-current-page").value = 1;
             e.dispatchEvent(event);
         }
     }
 
-    
-
-    // newMessage event handler
     function filterChangeHandler(e) {
-        console.log(e);
+        search();
+    }
+
+    function queryChangeHandler(e) {
+        document.querySelector(".arp-search-result").innerHTML = "";
+        var qb = document.getElementById("arp-search-query-input");
+        if (qb) {
+            updateUrl("q", qb.value);
+        }
+
         search();
     }
 
@@ -124,15 +146,23 @@
             var newValue = parseInt(page.value) + 1;
             page.value = newValue;
             search();
+        }
+    }
 
-            var rootPagesizeAttr = document.getElementById("arpsearch-results").getAttribute("data-pagesize");
-            var pageSize = parseInt(rootPagesizeAttr);
-            var totalResultCount = parseInt(document.getElementById("arpsearch-total-count").value);
-
-            if ((newValue * pageSize) >= totalResultCount) {
-                var showMoreButtoms = document.querySelectorAll(".arp-showmore-button");
+    function checkVisibilityOfShowMore() {
+        var rootPagesizeAttr = document.getElementById("arpsearch-results").getAttribute("data-pagesize");
+        var pageSize = parseInt(rootPagesizeAttr);
+        var totalResultCount = parseInt(document.getElementById("arpsearch-total-count").value);
+        var page = document.getElementById("arpsearch-current-page");
+        if (page) {
+            var showMoreButtoms = document.querySelectorAll(".arp-showmore-button");
+            if ((page.value * pageSize) >= totalResultCount) {
                 for (var i = 0; i < showMoreButtoms.length; i++) {
-                    showMoreButtoms[i].remove();
+                    showMoreButtoms[i].classList.add("arps-hide");
+                }
+            } else {
+                for (var i = 0; i < showMoreButtoms.length; i++) {
+                    showMoreButtoms[i].classList.remove("arps-hide");
                 }
             }
         }
@@ -144,6 +174,10 @@
         var totalResultCount = document.getElementById("arpsearch-total-count");
         if (totalResultCount) {
             totalResultCount.value = data.TotalResult;
+        }
+        var qb = document.getElementById("arp-search-query-input");
+        if (qb) {
+            qb.value = data.SearchBoxQuery;
         }
     }
 
@@ -167,31 +201,68 @@
                 }
             }
         }
-        
+
+    }
+
+    function updateUrl(parameter, value) {
+        window.history.pushState('', '', updateQueryStringParameter(window.location.href, parameter, value));
+    }
+
+    function updateQueryStringParameter(uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            if (value && value.length > 0) {
+                return uri.replace(re, '$1' + key + "=" + value + '$2');
+            } else {
+                return uri.replace(re, '$1' + '$2');
+            }
+
+        }
+        else {
+            if (value && value.length > 0) {
+                return uri + separator + key + "=" + value;
+            } else {
+                return uri;
+            }
+
+        }
     }
 
     function renderResultBody(results) {
         var resultsContainer = document.querySelector(".arp-search-result");
         if (resultsContainer) {
-            for (var i = 0; i < results.length; i++) {
-                if (results[i]) {
-                    var resultsMap = document.getElementById("sr_" + results[i].TemplateId);
-                    var templateId = undefined;
-                    if (resultsMap) {
-                        templateId = resultsMap.value;
-                    } else {
-                        templateId = "default-search-result";
-                    }
+            if (results.length > 0) {
+                document.getElementById("arp-search-no-results").classList.add("arps-hide");
+                
 
-                    if (templateId) {
-                        var teplateHtml = document.getElementById(templateId);
-                        if (teplateHtml) {
-                            var template = uscore.template(teplateHtml.innerHTML);
-                            resultsContainer.innerHTML = resultsContainer.innerHTML + template(results[i]);
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i]) {
+                        var resultsMap = document.getElementById("sr_" + results[i].TemplateId);
+                        var templateId = undefined;
+                        if (resultsMap) {
+                            templateId = resultsMap.value;
+                        } else {
+                            templateId = "default-search-result";
+                        }
+
+                        if (templateId) {
+                            var teplateHtml = document.getElementById(templateId);
+                            if (teplateHtml) {
+                                var template = uscore.template(teplateHtml.innerHTML);
+                                resultsContainer.innerHTML = resultsContainer.innerHTML + template(results[i]);
+                            }
                         }
                     }
-                    
                 }
+
+                document.getElementById("arp-search-result").classList.remove("arps-hide");
+                document.getElementById("arp-facets-container").classList.remove("arps-hide");
+
+            } else {
+                document.getElementById("arp-search-no-results").classList.remove("arps-hide");
+                document.getElementById("arp-search-result").classList.add("arps-hide");
+                document.getElementById("arp-facets-container").classList.add("arps-hide");
             }
         }
     }

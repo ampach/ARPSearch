@@ -136,6 +136,7 @@
   <ItemGroup>
     <Content Include="ARPSearch\css\arpsearch.main.css" />
     <Content Include="ARPSearch\img\arrow.png" />
+    <Content Include="ARPSearch\img\magn.png" />
     <Content Include="ARPSearch\js\arpsearch.main.js" />
     <Content Include="ARPSearch\js\underscore-min.js" />
     <None Include="Views\web.config" />

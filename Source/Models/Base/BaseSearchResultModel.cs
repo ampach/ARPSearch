@@ -22,6 +22,9 @@ namespace ARPSearch.Models.Base
         [DataMember]
         public ResultTypes SearchResultType { get; set; }
 
+        [DataMember]
+        public string SearchBoxQuery { get; set; }
+
         
     }
 }

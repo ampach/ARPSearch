@@ -144,6 +144,7 @@ namespace ARPSearch.Service.Base
 
                         PopulateFromQueryString(requestModel);
 
+                        result.SearchBoxQuery = requestModel.SearchBoxQuery;
                         result.Facets = GetFacets(items, requestModel);
 
                         var globalPredicateBuilder = PredicateBuilder.True<TIndexModel>();
@@ -297,7 +298,7 @@ namespace ARPSearch.Service.Base
         /// </summary>
         protected virtual void PopulateFromQueryString(ISearchRequestModel model)
         {
-            if (!SearchConfiguration.LoadQueryString)
+            if (!SearchConfiguration.LoadQueryString || !string.IsNullOrWhiteSpace(model.SearchBoxQuery) || (model.Filters != null && model.Filters.Any()))
             {
                 Logging.Log.Debug("Loading search parameters from query string is disabled");
                 return;
