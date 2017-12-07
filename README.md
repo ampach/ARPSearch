@@ -19,6 +19,8 @@
 
 The ARPSearch module has a search result rendering out of the box. After module installation (please see the “[How to install](https://github.com/ampach/ARPSearch#how-to-install)”  section), you can start using search on your site in a few clicks. Currently, the installation package provides a sample search configuration, which serves to help you with further search configuration. You just need to create a search page (please see the “[How to create search page](https://github.com/ampach/ARPSearch#how-to-create-search-page)” section) and publish your website.
 
+![Search Result Page](https://brimit-my.sharepoint.com/personal/apr_brimit_com/Documents/Articles/ARPSearch/img/Search-page.png?slrid=a93b349e-4058-4000-caab-88519d15d20a)
+
 ## How to install
 
 Follow the steps below for installing module:
