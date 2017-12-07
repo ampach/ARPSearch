@@ -17,7 +17,7 @@
 
 # Quick Start
 
-The ARPSearch module has a search result rendering out of the box. After module installation (please see the “[How to install](https://github.com/ampach/ARPSearch#how-to-install)”  section), you can start using search on your site in a few clicks. Currently, the installation package provides a sample search configuration, which serves to help you with further search configuration. You just need to create a search page (please see the “[How to create search page](https://github.com/ampach/ARPSearch#how-to-create-search-page)” section) and publish your website.
+The ARPSearch module has a search result rendering out of the box. After module installation (please see the “[How to install](#how-to-install)”  section), you can start using search on your site in a few clicks. Currently, the installation package provides a sample search configuration, which serves to help you with further search configuration. You just need to create a search page (please see the “[How to create search page](#how-to-create-search-page)” section) and publish your website.
 
 ## How to install
 
