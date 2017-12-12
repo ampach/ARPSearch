@@ -60,3 +60,5 @@ Finally, publish your website.
 
 Let’s imagine that you need more than basic functionality. 
 For example, ARPSearch has three type of facets (dropdown, checkbox list and checkbox) out of the box but you need more; or you want to extend the search with some extra filters, orderings and fields. You can also implement your own search page in case ours doesn’t match your general requirements. It is possible and a lot more!
+
+> ## Currently the documentation is in preparing status. It will be updated piecemeal.
