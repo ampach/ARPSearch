@@ -1,4 +1,4 @@
-﻿namespace ARPSearch.Usages.AdvancedUsages.Models.SearchRequestModels
+﻿namespace ARPSearch.UI.AdvancedUsages.Models.SearchRequestModels
 {
     public class ProductSearchRequest : ARPSearch.Models.SearchRequestModel
     {

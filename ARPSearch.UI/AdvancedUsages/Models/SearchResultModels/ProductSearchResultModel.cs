@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using ARPSearch.Usages.AdvancedUsages.Models.ViewModels;
 
-namespace ARPSearch.Usages.AdvancedUsages.Models.SearchResultModels
+namespace ARPSearch.UI.AdvancedUsages.Models.SearchResultModels
 {
     public class ProductSearchResultModel : ARPSearch.Models.Base.BaseSearchResultModel
     {

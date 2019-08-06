@@ -4,7 +4,7 @@ using Sitecore.ContentSearch;
 using Sitecore.ContentSearch.Converters;
 using Sitecore.Data;
 
-namespace ARPSearch.Usages.AdvancedUsages.Models.IndexModels
+namespace ARPSearch.UI.AdvancedUsages.Models.IndexModels
 {
     public class ProductIndexModel : ARPSearch.Models.Base.BaseIndexModel
     {

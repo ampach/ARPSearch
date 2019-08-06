@@ -324,7 +324,9 @@ namespace ARPSearch.Service.Base
                 model.SearchBoxQuery = decoded;
             }
 
-            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && !string.IsNullOrWhiteSpace(q.Value)).ToList();
+            var parameterBlacklist = new [] {"sc_itemid", "sc_mode", "sc_lang", "sc_site"};
+
+            var querystrings = url.Parameters.ToKeyValues().Where(q => q.Key != "q" && !parameterBlacklist.Contains(q.Key) && !string.IsNullOrWhiteSpace(q.Value)).ToList();
             if (!querystrings.Any())
                 return;
 
