@@ -5,14 +5,14 @@ using System.Linq.Expressions;
 using ARPSearch.Extensions;
 using ARPSearch.Models;
 using ARPSearch.Models.Items.Interfaces;
-using ARPSearch.Usages.AdvancedUsages.Models.IndexModels;
-using ARPSearch.Usages.AdvancedUsages.Models.SearchRequestModels;
-using ARPSearch.Usages.AdvancedUsages.Models.SearchResultModels;
+using ARPSearch.UI.AdvancedUsages.Models.IndexModels;
+using ARPSearch.UI.AdvancedUsages.Models.SearchRequestModels;
+using ARPSearch.UI.AdvancedUsages.Models.SearchResultModels;
 using ARPSearch.Usages.AdvancedUsages.Models.ViewModels;
 using Sitecore.ContentSearch.Linq;
 using Sitecore.ContentSearch.Linq.Utilities;
 
-namespace ARPSearch.Usages.AdvancedUsages.Services
+namespace ARPSearch.UI.AdvancedUsages.Services
 {
     public class ProductSearchService : ARPSearch.Service.Base.SearchAbstractService<ProductSearchRequest, ProductIndexModel,ProductSearchResultModel>
     {

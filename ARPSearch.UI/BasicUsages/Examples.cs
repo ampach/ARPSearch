@@ -1,4 +1,4 @@
-﻿using ARPSearch.Usages.AdvancedUsages.Services;
+﻿using ARPSearch.UI.AdvancedUsages.Services;
 
 namespace ARPSearch.UI.BasicUsages
 {
